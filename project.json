@@ -22,12 +22,12 @@
  "font_assets": [
   {
    "family": "Lesson TC",
-   "url": "fonts/NotoSansTC-VF.ttf",
+   "url": "fonts/NotoSansTC-subset.woff2",
    "license": "OFL-1.1"
   },
   {
    "family": "Lesson Latin",
-   "url": "fonts/NotoSans-Regular.ttf",
+   "url": "fonts/NotoSans-Regular.woff2",
    "license": "OFL-1.1"
   }
  ],
