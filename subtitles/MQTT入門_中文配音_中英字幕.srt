@@ -1,0 +1,410 @@
+1
+00:00:00,800 --> 00:00:03,420
+想像教室裡有三十個感測器，
+Imagine a classroom with thirty sensors:
+
+2
+00:00:03,460 --> 00:00:05,920
+溫度、濕度、二氧化碳，
+temperature, humidity, carbon dioxide.
+
+3
+00:00:05,960 --> 00:00:10,257
+每一筆資料都要同時送到手機、網頁和資料庫。
+Every reading must reach a phone, a web page and a database at once.
+
+4
+00:00:10,297 --> 00:00:13,677
+如果每個裝置都和每個接收端直接連線，
+If every device connected directly to every receiver,
+
+5
+00:00:13,717 --> 00:00:16,337
+線路很快就會亂成一張蜘蛛網。
+the links would soon tangle into a spider web.
+
+6
+00:00:16,377 --> 00:00:18,413
+有沒有更好的方法？
+Is there a better way?
+
+7
+00:00:18,713 --> 00:00:21,373
+答案之一，就是 MQTT。
+One answer is MQTT.
+
+8
+00:00:21,673 --> 00:00:25,173
+1999 年，IBM 的 Andy Stanford-Clark
+In 1999, Andy Stanford-Clark of IBM
+
+9
+00:00:25,213 --> 00:00:27,473
+和 Arcom 公司的 Arlen Nipper，
+and Arlen Nipper of Arcom
+
+10
+00:00:27,513 --> 00:00:31,463
+為了透過衛星監控石油管線，設計出這個協定。
+designed this protocol to monitor oil pipelines via satellite.
+
+11
+00:00:31,503 --> 00:00:35,303
+當時衛星頻寬很貴、連線不穩定，
+Satellite bandwidth was expensive and links were unstable,
+
+12
+00:00:35,343 --> 00:00:37,743
+現場裝置的電力也有限，
+and field devices had limited power,
+
+13
+00:00:37,783 --> 00:00:41,645
+所以它必須又輕、又省、又可靠。
+so it had to be lightweight, efficient and reliable.
+
+14
+00:00:41,685 --> 00:00:44,545
+2010 年，規格免費公開；
+In 2010, the specification was released royalty-free;
+
+15
+00:00:44,585 --> 00:00:47,585
+2014 年成為 OASIS 標準，
+in 2014 it became an OASIS standard,
+
+16
+00:00:47,625 --> 00:00:50,425
+後來也成為 ISO 國際標準；
+and later an ISO international standard;
+
+17
+00:00:50,485 --> 00:00:54,414
+2019 年，推出 MQTT 5.0。
+in 2019, MQTT 5.0 was released.
+
+18
+00:00:54,713 --> 00:00:57,713
+MQTT 的核心是「發布與訂閱」。
+At the heart of MQTT is publish/subscribe.
+
+19
+00:00:57,753 --> 00:01:00,693
+中間有一台伺服器，叫做 Broker，
+In the middle sits a server called the Broker,
+
+20
+00:01:00,733 --> 00:01:02,855
+也就是訊息代理人。
+the message broker.
+
+21
+00:01:02,895 --> 00:01:07,135
+感測器是發布者，它只要把資料送到一個「主題」，
+The sensor is a publisher; it just sends data to a “topic”,
+
+22
+00:01:07,175 --> 00:01:11,454
+例如 101 教室的溫度，不需要知道誰會收到。
+such as Room 101's temperature, without knowing who will receive it.
+
+23
+00:01:11,494 --> 00:01:13,694
+手機和網頁是訂閱者，
+The phone and the web page are subscribers.
+
+24
+00:01:13,734 --> 00:01:17,154
+事先告訴 Broker 自己關心哪些主題；
+They tell the Broker in advance which topics they care about.
+
+25
+00:01:17,194 --> 00:01:21,074
+Broker 一收到新訊息，就複製一份轉交給它們。
+When a new message arrives, the Broker forwards a copy to each.
+
+26
+00:01:21,114 --> 00:01:24,130
+雙方完全不必知道彼此的位址。
+Neither side needs to know the other's address.
+
+27
+00:01:24,430 --> 00:01:27,910
+主題像資料夾一樣，用斜線分層：
+Topics are layered with slashes, like folders:
+
+28
+00:01:27,950 --> 00:01:31,455
+學校、教室、感測項目。
+school, classroom, sensor type.
+
+29
+00:01:31,495 --> 00:01:34,435
+訂閱時可以使用萬用字元。
+When subscribing, you can use wildcards.
+
+30
+00:01:34,635 --> 00:01:36,975
+加號「+」代表「任意一層」，
+The plus sign “+” matches any single level,
+
+31
+00:01:37,015 --> 00:01:40,195
+所以 school/+/temp
+so school/+/temp
+
+32
+00:01:40,235 --> 00:01:43,040
+會收到每一間教室的溫度。
+receives the temperature of every classroom.
+
+33
+00:01:43,080 --> 00:01:46,200
+井字號「#」代表「這一層以下的全部」，
+The hash “#” matches everything below that level,
+
+34
+00:01:46,240 --> 00:01:48,095
+而且只能放在最後；
+and it can only go at the end;
+
+35
+00:01:48,135 --> 00:01:54,282
+school/room101/# 就是這間教室的所有資料。
+school/room101/# means all data from that room.
+
+36
+00:01:54,583 --> 00:02:01,382
+網路不一定可靠，所以 MQTT 提供三種服務品質，簡稱 QoS。
+Networks aren't always reliable, so MQTT offers three Quality of Service levels.
+
+37
+00:02:01,422 --> 00:02:05,122
+QoS 0，最多送一次，送出就不管，
+QoS 0: at most once — send and forget,
+
+38
+00:02:05,162 --> 00:02:07,879
+最省資源，但可能遺失。
+cheapest, but messages may be lost.
+
+39
+00:02:07,919 --> 00:02:13,279
+QoS 1，至少送一次，收到的一方要回覆確認，
+QoS 1: at least once — the receiver must acknowledge,
+
+40
+00:02:13,319 --> 00:02:17,354
+沒收到確認就重送，所以可能重複。
+and without an acknowledgment it resends, so duplicates can happen.
+
+41
+00:02:17,394 --> 00:02:21,414
+QoS 2，剛好一次，用四個步驟確認，
+QoS 2: exactly once, confirmed in four steps —
+
+42
+00:02:21,454 --> 00:02:24,594
+最可靠，但也最慢、最耗流量。
+the most reliable, but also the slowest and most costly.
+
+43
+00:02:24,854 --> 00:02:27,480
+要依資料的重要性來選擇。
+Choose based on how important the data is.
+
+44
+00:02:27,779 --> 00:02:29,639
+還有兩個實用功能。
+Two more handy features.
+
+45
+00:02:29,679 --> 00:02:34,019
+保留訊息：Broker 會記住主題的最後一筆值，
+Retained messages: the Broker remembers a topic's last value,
+
+46
+00:02:34,059 --> 00:02:37,802
+新的訂閱者一連上，就立刻知道目前狀態。
+so a new subscriber learns the current state immediately.
+
+47
+00:02:37,842 --> 00:02:42,742
+遺囑訊息：裝置連線時先留下一段遺言；
+Last Will: a device leaves a “will” when it connects;
+
+48
+00:02:42,782 --> 00:02:47,402
+萬一它意外斷線，Broker 會代為發布「已離線」，
+if it drops off unexpectedly, the Broker publishes “offline” for it,
+
+49
+00:02:47,442 --> 00:02:48,842
+讓大家知道。
+so everyone knows.
+
+50
+00:02:49,137 --> 00:02:52,177
+和網頁常用的 HTTP 比一比。
+Let's compare it with HTTP, the protocol of the web.
+
+51
+00:02:52,297 --> 00:02:55,046
+同樣要讓手機即時看到溫度：
+Same task: show the temperature on a phone in real time.
+
+52
+00:02:55,086 --> 00:03:00,866
+HTTP 是請求與回應，手機得一再詢問「有新資料嗎？」，
+HTTP is request–response: the phone keeps asking “Any new data?”
+
+53
+00:03:00,946 --> 00:03:03,890
+每次都帶著一長串文字標頭。
+carrying a long text header every time.
+
+54
+00:03:03,930 --> 00:03:06,810
+MQTT 則維持一條長連線，
+MQTT keeps one long-lived connection;
+
+55
+00:03:06,850 --> 00:03:09,770
+有新資料時由 Broker 主動推送，
+when new data arrives, the Broker pushes it,
+
+56
+00:03:09,810 --> 00:03:12,942
+固定標頭最小只有兩個位元組。
+and the fixed header can be as small as two bytes.
+
+57
+00:03:12,982 --> 00:03:17,302
+HTTP 工具成熟，適合網頁和檔案傳輸；
+HTTP has mature tools and suits web pages and file transfer;
+
+58
+00:03:17,342 --> 00:03:22,927
+MQTT 則適合頻寬小、裝置多、需要即時通知的物聯網。
+MQTT suits IoT: low bandwidth, many devices, instant notifications.
+
+59
+00:03:23,227 --> 00:03:26,327
+MQTT 早就用在真實產品中，
+MQTT is already used in real products.
+
+60
+00:03:26,367 --> 00:03:28,727
+例如 2011 年的 Facebook Messenger，
+In 2011, Facebook Messenger
+
+61
+00:03:28,767 --> 00:03:31,639
+就用它維持手機的長連線。
+used it to keep a persistent connection on phones.
+
+62
+00:03:31,679 --> 00:03:35,499
+來看一個示範情境：教室環境監測。
+Now a demonstration scenario: classroom monitoring.
+
+63
+00:03:35,579 --> 00:03:40,119
+ESP32 每十秒用 QoS 0 發布溫度，
+An ESP32 publishes the temperature every ten seconds at QoS 0;
+
+64
+00:03:40,199 --> 00:03:42,177
+偶爾少一筆沒有關係。
+missing a reading now and then is fine.
+
+65
+00:03:42,217 --> 00:03:46,237
+冷氣開關的指令比較重要，改用 QoS 1；
+Air-conditioner commands matter more, so they use QoS 1;
+
+66
+00:03:46,357 --> 00:03:51,249
+裝置也設定遺囑訊息，一斷線，畫面就顯示離線。
+the device also sets a Last Will, so the screen shows “offline” if it drops.
+
+67
+00:03:51,289 --> 00:03:54,649
+結果，老師只要訂閱一個加號主題，
+As a result, by subscribing to a single “+” topic,
+
+68
+00:03:54,689 --> 00:03:58,866
+就能在手機上看到所有教室，還能遠端控制。
+the teacher sees every classroom on a phone and can control them remotely.
+
+69
+00:03:58,906 --> 00:04:03,186
+但要注意：Broker 是集中點，需要備援；
+But note: the Broker is a central point and needs redundancy;
+
+70
+00:04:03,226 --> 00:04:06,626
+公開的測試 Broker 不能傳私密資料，
+never send private data through a public test Broker;
+
+71
+00:04:06,666 --> 00:04:10,947
+正式使用要加上帳號密碼與 TLS 加密。
+real deployments need usernames, passwords and TLS encryption.
+
+72
+00:04:11,247 --> 00:04:15,367
+展望未來，MQTT 5.0 加入了原因碼、
+Looking ahead, MQTT 5.0 added reason codes,
+
+73
+00:04:15,407 --> 00:04:20,779
+共享訂閱和訊息到期等功能，讓大型系統更容易管理。
+shared subscriptions and message expiry, making large systems easier to manage.
+
+74
+00:04:20,819 --> 00:04:25,079
+在工廠裡，建立在 MQTT 之上的 Sparkplug 規範，
+In factories, the Sparkplug specification, built on MQTT,
+
+75
+00:04:25,119 --> 00:04:28,174
+已在 2023 年成為國際標準。
+became an international standard in 2023.
+
+76
+00:04:28,214 --> 00:04:32,314
+也有廠商正在實驗以 QUIC 取代 TCP，
+Some vendors are experimenting with QUIC instead of TCP
+
+77
+00:04:32,354 --> 00:04:36,594
+讓不穩定的網路更快重新連線。
+to reconnect faster on unstable networks.
+
+78
+00:04:36,654 --> 00:04:39,914
+不過，面對數以百萬計的裝置，
+Yet with millions of devices,
+
+79
+00:04:39,954 --> 00:04:43,286
+安全與管理仍是待解的挑戰。
+security and management remain open challenges.
+
+80
+00:04:43,586 --> 00:04:47,566
+記住一句話：發布者只管送到主題，
+Remember this: publishers just send to a topic,
+
+81
+00:04:47,606 --> 00:04:52,366
+Broker 負責轉交，訂閱者只收自己關心的。
+the Broker delivers, and subscribers get only what they care about.
+
+82
+00:04:52,406 --> 00:04:55,040
+這，就是 MQTT。
+That is MQTT.
+

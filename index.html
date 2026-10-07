@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MQTT 入門</title>
+<meta name="description" content="MQTT 入門教學動畫與互動網頁：發布／訂閱、Topic 萬用字元、QoS、保留訊息與遺囑。李振偉老師。">
+<link rel="stylesheet" href="player/style.css?v=20261007b">
+<style>
+  main{max-width:960px;margin:0 auto;padding:32px 16px 48px;line-height:1.7}
+  h1{font-size:clamp(26px,4vw,40px);margin:0 0 4px}
+  .by{color:var(--muted);margin:0 0 24px}
+  .hero{display:block;padding:28px;border-radius:18px;background:var(--panel);border:1px solid var(--broker);color:var(--ink);text-decoration:none}
+  .hero:hover{background:var(--panel2)}
+  .hero strong{font-size:24px;color:var(--broker)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+  .card{padding:18px;border-radius:14px;background:var(--bg2);border:1px solid var(--line)}
+  .card h2{font-size:19px;margin:0 0 8px}
+  .card a{color:var(--sky);display:block;margin:4px 0;overflow-wrap:anywhere}
+  video{width:100%;border-radius:14px;margin-top:22px;background:#000}
+  .note{font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <h1>MQTT 入門：訊息如何找到對的人？</h1>
+  <p class="by">李振偉老師 · 中文配音 · 中英／中越字幕 · 約 5 分鐘</p>
+  <a class="hero" href="player/index.html">
+    <strong>▶ 開啟互動動畫</strong><br>
+    可切換中英／中越字幕、依章節跳轉，並用「Topic 萬用字元實驗室」練習 + 與 # 的訂閱規則。
+  </a>
+  <video controls preload="metadata" src="videos/MQTT入門_中文配音_中英字幕.mp4" aria-label="MQTT 入門影片（中英字幕）"></video>
+  <div class="grid">
+    <div class="card">
+      <h2>影片下載（MP4，1080p）</h2>
+      <a href="videos/MQTT入門_中文配音_中英字幕.mp4" download>中文配音＋中英字幕</a>
+      <a href="videos/MQTT入門_中文配音_中越字幕.mp4" download>中文配音＋中越字幕（Tiếng Việt）</a>
+    </div>
+    <div class="card">
+      <h2>字幕檔（SRT）</h2>
+      <a href="subtitles/MQTT入門_中文配音_中英字幕.srt" download>中英字幕 .srt</a>
+      <a href="subtitles/MQTT入門_中文配音_中越字幕.srt" download>中越字幕 .srt</a>
+    </div>
+    <div class="card">
+      <h2>內容</h2>
+      起源（1999）・發布／訂閱・Topic 與萬用字元・QoS 0/1/2・保留訊息與遺囑・MQTT vs HTTP・應用案例・展望
+      <a href="player/sources.html">資料來源與授權</a>
+    </div>
+  </div>
+  <p class="note">旁白由 Google Gemini TTS 生成；配樂與音效為原創合成；字型 Noto Sans TC／Noto Sans（OFL）。教室監測為示範情境。</p>
+</main>
+</body>
+</html>

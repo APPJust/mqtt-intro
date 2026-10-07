@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MQTT 入門來源</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body{background:#070c16}
+  main{max-width:960px;margin:0 auto;padding:24px 16px 48px;line-height:1.7}
+  h1{font-size:28px} h2{font-size:21px;margin-top:28px;color:var(--broker)}
+  li{margin:6px 0} a{color:var(--sky)} .dim{color:var(--muted);font-size:14px}
+  table{border-collapse:collapse;width:100%;font-size:15px} td,th{border:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}
+</style>
+</head>
+<body>
+<main>
+  <h1>MQTT 入門：來源、授權與說明</h1>
+  <p><a href="index.html">← 回到動畫</a></p>
+  <p class="dim">資料查閱日：2026-10-07。教室監測為示範情境，非真實部署；動畫中的封包與連線為教學示意，不代表真實封包結構或效能。</p>
+  <div id="sections"></div>
+  <h2>素材與授權</h2>
+  <ul>
+    <li>旁白：Google Gemini TTS（gemini-3.8-flash-tts，聲線 Charon）生成，中文配音。</li>
+    <li>背景音樂與音效：以程式原創合成（tools/audio.py），無第三方取樣。</li>
+    <li>字型：Noto Sans TC、Noto Sans（SIL Open Font License 1.1）。</li>
+    <li>動畫與圖示：本專案原創 SVG。</li>
+  </ul>
+  <p class="dim">製作：李振偉老師</p>
+</main>
+<script>
+fetch(new URLSearchParams(location.search).get('project') || '../project.json').then(r => r.json()).then(p => {
+  const box = document.getElementById('sections');
+  const src = Object.fromEntries(p.sources.map(s => [s.id, s]));
+  const names = { origin: '起源', principle: '原理', comparison: '比較', application: '應用', outlook: '展望' };
+  const table = document.createElement('table');
+  table.innerHTML = '<tr><th>章節</th><th>內容摘要</th><th>來源</th></tr>';
+  for (const [k, v] of Object.entries(p.coverage)) {
+    const tr = document.createElement('tr');
+    const td = (html) => { const c = document.createElement('td'); c.innerHTML = html; tr.append(c); };
+    td(names[k]); const s = document.createElement('td'); s.textContent = v.summary; tr.append(s);
+    td(v.source_ids.map(id => `<a href="${src[id].url}" target="_blank" rel="noopener">${src[id].title}</a>`).join('<br>'));
+    table.append(tr);
+  }
+  const h = document.createElement('h2'); h.textContent = '五部分內容與來源'; box.append(h, table);
+  const h2 = document.createElement('h2'); h2.textContent = '來源清單'; const ul = document.createElement('ul');
+  for (const s of p.sources) { const li = document.createElement('li'); li.innerHTML = `<a href="${s.url}" target="_blank" rel="noopener">${s.title}</a>${s.published_at ? `（${s.published_at}）` : ''} <span class="dim">查閱 ${s.checked_at}</span>`; ul.append(li); }
+  box.append(h2, ul);
+});
+</script>
+</body>
+</html>

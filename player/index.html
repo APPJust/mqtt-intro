@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MQTT 入門動畫</title>
+<link rel="stylesheet" href="style.css?v=20261007b">
+</head>
+<body>
+<div id="shell">
+  <header id="top">
+    <h1>MQTT 入門：訊息如何找到對的人？</h1>
+    <p class="by">李振偉老師 · 中文配音 · 中英／中越字幕</p>
+  </header>
+  <div id="viewport">
+    <main id="stage" aria-label="MQTT 教學動畫畫面">
+      <div id="chapter" data-qa data-container="#stage"></div>
+      <h2 id="heading" data-qa data-container="#stage"></h2>
+      <svg id="art" viewBox="0 0 1920 1080" aria-hidden="true"></svg>
+      <div id="caption" data-qa data-container="#stage"><div id="cap1"></div><div id="cap2"></div></div>
+      <div id="progress-mark"></div>
+    </main>
+  </div>
+  <nav id="controls" aria-label="播放控制">
+    <button id="play" type="button">播放</button>
+    <button id="replay" type="button">重播</button>
+    <input id="seek" type="range" min="0" step="1" value="0" aria-label="播放進度">
+    <span id="time">0.0 s</span>
+    <label class="sel">章節 <select id="chapters" aria-label="章節"></select></label>
+    <label class="sel">字幕 <select id="subs" aria-label="字幕語言">
+      <option value="en">中文＋English</option>
+      <option value="vi">中文＋Tiếng Việt</option>
+    </select></label>
+    <button id="captions" type="button" aria-pressed="true">字幕開啟</button>
+  </nav>
+  <p id="status" role="status"></p>
+  <section id="lab" aria-labelledby="lab-title"></section>
+  <footer class="note">動畫中的教室監測為教學示範情境；比喻不等於真實網路封包結構。<a href="sources.html" style="color:inherit">資料來源與授權</a></footer>
+</div>
+<script src="lesson.js?v=20261007b"></script>
+<script src="scenes.js?v=20261007b"></script>
+<script src="scenes2.js?v=20261007b"></script>
+<script src="lab.js?v=20261007b"></script>
+</body>
+</html>

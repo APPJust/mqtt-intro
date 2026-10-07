@@ -1,0 +1,410 @@
+1
+00:00:00,800 --> 00:00:03,420
+想像教室裡有三十個感測器，
+Hãy tưởng tượng một lớp học có ba mươi cảm biến:
+
+2
+00:00:03,460 --> 00:00:05,920
+溫度、濕度、二氧化碳，
+nhiệt độ, độ ẩm, khí CO2.
+
+3
+00:00:05,960 --> 00:00:10,257
+每一筆資料都要同時送到手機、網頁和資料庫。
+Mỗi dữ liệu phải đến cùng lúc điện thoại, trang web và cơ sở dữ liệu.
+
+4
+00:00:10,297 --> 00:00:13,677
+如果每個裝置都和每個接收端直接連線，
+Nếu mỗi thiết bị kết nối trực tiếp với từng bên nhận,
+
+5
+00:00:13,717 --> 00:00:16,337
+線路很快就會亂成一張蜘蛛網。
+các đường kết nối sẽ nhanh chóng rối như mạng nhện.
+
+6
+00:00:16,377 --> 00:00:18,413
+有沒有更好的方法？
+Có cách nào tốt hơn không?
+
+7
+00:00:18,713 --> 00:00:21,373
+答案之一，就是 MQTT。
+Một câu trả lời chính là MQTT.
+
+8
+00:00:21,673 --> 00:00:25,173
+1999 年，IBM 的 Andy Stanford-Clark
+Năm 1999, Andy Stanford-Clark của IBM
+
+9
+00:00:25,213 --> 00:00:27,473
+和 Arcom 公司的 Arlen Nipper，
+và Arlen Nipper của công ty Arcom
+
+10
+00:00:27,513 --> 00:00:31,463
+為了透過衛星監控石油管線，設計出這個協定。
+đã thiết kế giao thức này để giám sát đường ống dầu qua vệ tinh.
+
+11
+00:00:31,503 --> 00:00:35,303
+當時衛星頻寬很貴、連線不穩定，
+Khi đó băng thông vệ tinh rất đắt, kết nối không ổn định,
+
+12
+00:00:35,343 --> 00:00:37,743
+現場裝置的電力也有限，
+thiết bị tại hiện trường cũng hạn chế về điện năng,
+
+13
+00:00:37,783 --> 00:00:41,645
+所以它必須又輕、又省、又可靠。
+nên nó phải nhẹ, tiết kiệm và đáng tin cậy.
+
+14
+00:00:41,685 --> 00:00:44,545
+2010 年，規格免費公開；
+Năm 2010, đặc tả được công bố miễn phí bản quyền;
+
+15
+00:00:44,585 --> 00:00:47,585
+2014 年成為 OASIS 標準，
+năm 2014 trở thành tiêu chuẩn OASIS,
+
+16
+00:00:47,625 --> 00:00:50,425
+後來也成為 ISO 國際標準；
+sau đó trở thành tiêu chuẩn quốc tế ISO;
+
+17
+00:00:50,485 --> 00:00:54,414
+2019 年，推出 MQTT 5.0。
+năm 2019, MQTT 5.0 ra đời.
+
+18
+00:00:54,713 --> 00:00:57,713
+MQTT 的核心是「發布與訂閱」。
+Cốt lõi của MQTT là “xuất bản – đăng ký” (publish/subscribe).
+
+19
+00:00:57,753 --> 00:01:00,693
+中間有一台伺服器，叫做 Broker，
+Ở giữa có một máy chủ gọi là Broker,
+
+20
+00:01:00,733 --> 00:01:02,855
+也就是訊息代理人。
+tức là bên trung gian chuyển tiếp tin nhắn.
+
+21
+00:01:02,895 --> 00:01:07,135
+感測器是發布者，它只要把資料送到一個「主題」，
+Cảm biến là bên xuất bản; nó chỉ cần gửi dữ liệu đến một “chủ đề”,
+
+22
+00:01:07,175 --> 00:01:11,454
+例如 101 教室的溫度，不需要知道誰會收到。
+ví dụ nhiệt độ phòng 101, mà không cần biết ai sẽ nhận.
+
+23
+00:01:11,494 --> 00:01:13,694
+手機和網頁是訂閱者，
+Điện thoại và trang web là bên đăng ký (subscriber).
+
+24
+00:01:13,734 --> 00:01:17,154
+事先告訴 Broker 自己關心哪些主題；
+Chúng báo trước cho Broker biết mình quan tâm chủ đề nào.
+
+25
+00:01:17,194 --> 00:01:21,074
+Broker 一收到新訊息，就複製一份轉交給它們。
+Khi có tin nhắn mới, Broker sao chép và chuyển cho từng bên.
+
+26
+00:01:21,114 --> 00:01:24,130
+雙方完全不必知道彼此的位址。
+Hai bên hoàn toàn không cần biết địa chỉ của nhau.
+
+27
+00:01:24,430 --> 00:01:27,910
+主題像資料夾一樣，用斜線分層：
+Chủ đề được phân tầng bằng dấu gạch chéo, giống thư mục:
+
+28
+00:01:27,950 --> 00:01:31,455
+學校、教室、感測項目。
+trường, phòng học, loại cảm biến.
+
+29
+00:01:31,495 --> 00:01:34,435
+訂閱時可以使用萬用字元。
+Khi đăng ký, bạn có thể dùng ký tự đại diện.
+
+30
+00:01:34,635 --> 00:01:36,975
+加號「+」代表「任意一層」，
+Dấu cộng “+” đại diện cho “một tầng bất kỳ”,
+
+31
+00:01:37,015 --> 00:01:40,195
+所以 school/+/temp
+nên school/+/temp
+
+32
+00:01:40,235 --> 00:01:43,040
+會收到每一間教室的溫度。
+sẽ nhận nhiệt độ của mọi phòng học.
+
+33
+00:01:43,080 --> 00:01:46,200
+井字號「#」代表「這一層以下的全部」，
+Dấu thăng “#” đại diện cho “mọi thứ từ tầng này trở xuống”,
+
+34
+00:01:46,240 --> 00:01:48,095
+而且只能放在最後；
+và chỉ được đặt ở cuối;
+
+35
+00:01:48,135 --> 00:01:54,282
+school/room101/# 就是這間教室的所有資料。
+school/room101/# là toàn bộ dữ liệu của phòng này.
+
+36
+00:01:54,583 --> 00:02:01,382
+網路不一定可靠，所以 MQTT 提供三種服務品質，簡稱 QoS。
+Mạng không luôn ổn định, nên MQTT có ba mức chất lượng dịch vụ (QoS).
+
+37
+00:02:01,422 --> 00:02:05,122
+QoS 0，最多送一次，送出就不管，
+QoS 0: tối đa một lần — gửi xong là thôi,
+
+38
+00:02:05,162 --> 00:02:07,879
+最省資源，但可能遺失。
+tiết kiệm nhất, nhưng có thể bị mất.
+
+39
+00:02:07,919 --> 00:02:13,279
+QoS 1，至少送一次，收到的一方要回覆確認，
+QoS 1: ít nhất một lần — bên nhận phải gửi xác nhận,
+
+40
+00:02:13,319 --> 00:02:17,354
+沒收到確認就重送，所以可能重複。
+không có xác nhận thì gửi lại, nên có thể bị trùng.
+
+41
+00:02:17,394 --> 00:02:21,414
+QoS 2，剛好一次，用四個步驟確認，
+QoS 2: đúng một lần, xác nhận qua bốn bước —
+
+42
+00:02:21,454 --> 00:02:24,594
+最可靠，但也最慢、最耗流量。
+đáng tin cậy nhất, nhưng cũng chậm và tốn băng thông nhất.
+
+43
+00:02:24,854 --> 00:02:27,480
+要依資料的重要性來選擇。
+Hãy chọn theo mức độ quan trọng của dữ liệu.
+
+44
+00:02:27,779 --> 00:02:29,639
+還有兩個實用功能。
+Còn hai tính năng hữu ích nữa.
+
+45
+00:02:29,679 --> 00:02:34,019
+保留訊息：Broker 會記住主題的最後一筆值，
+Tin nhắn lưu giữ: Broker ghi nhớ giá trị cuối cùng của chủ đề,
+
+46
+00:02:34,059 --> 00:02:37,802
+新的訂閱者一連上，就立刻知道目前狀態。
+nên bên đăng ký mới vừa kết nối là biết ngay trạng thái hiện tại.
+
+47
+00:02:37,842 --> 00:02:42,742
+遺囑訊息：裝置連線時先留下一段遺言；
+Di chúc (Last Will): thiết bị để lại “lời nhắn” khi kết nối;
+
+48
+00:02:42,782 --> 00:02:47,402
+萬一它意外斷線，Broker 會代為發布「已離線」，
+nếu mất kết nối bất ngờ, Broker sẽ thay nó đăng “đã ngoại tuyến”,
+
+49
+00:02:47,442 --> 00:02:48,842
+讓大家知道。
+để mọi người cùng biết.
+
+50
+00:02:49,137 --> 00:02:52,177
+和網頁常用的 HTTP 比一比。
+Hãy so sánh với HTTP, giao thức thường dùng trên web.
+
+51
+00:02:52,297 --> 00:02:55,046
+同樣要讓手機即時看到溫度：
+Cùng nhiệm vụ: hiển thị nhiệt độ trên điện thoại theo thời gian thực.
+
+52
+00:02:55,086 --> 00:03:00,866
+HTTP 是請求與回應，手機得一再詢問「有新資料嗎？」，
+HTTP là yêu cầu – phản hồi: điện thoại phải liên tục hỏi “Có dữ liệu mới không?”
+
+53
+00:03:00,946 --> 00:03:03,890
+每次都帶著一長串文字標頭。
+và mỗi lần đều kèm phần tiêu đề văn bản dài.
+
+54
+00:03:03,930 --> 00:03:06,810
+MQTT 則維持一條長連線，
+MQTT duy trì một kết nối lâu dài;
+
+55
+00:03:06,850 --> 00:03:09,770
+有新資料時由 Broker 主動推送，
+khi có dữ liệu mới, Broker chủ động đẩy đến,
+
+56
+00:03:09,810 --> 00:03:12,942
+固定標頭最小只有兩個位元組。
+và phần tiêu đề cố định nhỏ nhất chỉ có hai byte.
+
+57
+00:03:12,982 --> 00:03:17,302
+HTTP 工具成熟，適合網頁和檔案傳輸；
+HTTP có công cụ hoàn thiện, phù hợp với web và truyền tệp;
+
+58
+00:03:17,342 --> 00:03:22,927
+MQTT 則適合頻寬小、裝置多、需要即時通知的物聯網。
+MQTT hợp với IoT: băng thông thấp, nhiều thiết bị, cần báo tức thì.
+
+59
+00:03:23,227 --> 00:03:26,327
+MQTT 早就用在真實產品中，
+MQTT đã được dùng trong các sản phẩm thực tế.
+
+60
+00:03:26,367 --> 00:03:28,727
+例如 2011 年的 Facebook Messenger，
+Ví dụ năm 2011, Facebook Messenger
+
+61
+00:03:28,767 --> 00:03:31,639
+就用它維持手機的長連線。
+đã dùng nó để duy trì kết nối lâu dài trên điện thoại.
+
+62
+00:03:31,679 --> 00:03:35,499
+來看一個示範情境：教室環境監測。
+Hãy xem một tình huống minh họa: giám sát môi trường lớp học.
+
+63
+00:03:35,579 --> 00:03:40,119
+ESP32 每十秒用 QoS 0 發布溫度，
+ESP32 cứ mười giây đăng nhiệt độ một lần với QoS 0;
+
+64
+00:03:40,199 --> 00:03:42,177
+偶爾少一筆沒有關係。
+thỉnh thoảng thiếu một lần cũng không sao.
+
+65
+00:03:42,217 --> 00:03:46,237
+冷氣開關的指令比較重要，改用 QoS 1；
+Lệnh bật tắt máy lạnh quan trọng hơn nên dùng QoS 1;
+
+66
+00:03:46,357 --> 00:03:51,249
+裝置也設定遺囑訊息，一斷線，畫面就顯示離線。
+thiết bị cũng đặt Di chúc, mất kết nối là màn hình báo ngoại tuyến.
+
+67
+00:03:51,289 --> 00:03:54,649
+結果，老師只要訂閱一個加號主題，
+Kết quả là chỉ cần đăng ký một chủ đề có dấu “+”,
+
+68
+00:03:54,689 --> 00:03:58,866
+就能在手機上看到所有教室，還能遠端控制。
+giáo viên xem được mọi phòng học trên điện thoại và điều khiển từ xa.
+
+69
+00:03:58,906 --> 00:04:03,186
+但要注意：Broker 是集中點，需要備援；
+Nhưng lưu ý: Broker là điểm tập trung, cần có dự phòng;
+
+70
+00:04:03,226 --> 00:04:06,626
+公開的測試 Broker 不能傳私密資料，
+không gửi dữ liệu riêng tư qua Broker thử nghiệm công cộng;
+
+71
+00:04:06,666 --> 00:04:10,947
+正式使用要加上帳號密碼與 TLS 加密。
+khi dùng thật cần tài khoản, mật khẩu và mã hóa TLS.
+
+72
+00:04:11,247 --> 00:04:15,367
+展望未來，MQTT 5.0 加入了原因碼、
+Nhìn về tương lai, MQTT 5.0 đã thêm mã lý do,
+
+73
+00:04:15,407 --> 00:04:20,779
+共享訂閱和訊息到期等功能，讓大型系統更容易管理。
+đăng ký chia sẻ và hạn tin nhắn, giúp hệ thống lớn dễ quản lý hơn.
+
+74
+00:04:20,819 --> 00:04:25,079
+在工廠裡，建立在 MQTT 之上的 Sparkplug 規範，
+Trong nhà máy, đặc tả Sparkplug xây dựng trên MQTT
+
+75
+00:04:25,119 --> 00:04:28,174
+已在 2023 年成為國際標準。
+đã trở thành tiêu chuẩn quốc tế vào năm 2023.
+
+76
+00:04:28,214 --> 00:04:32,314
+也有廠商正在實驗以 QUIC 取代 TCP，
+Một số hãng đang thử nghiệm dùng QUIC thay cho TCP
+
+77
+00:04:32,354 --> 00:04:36,594
+讓不穩定的網路更快重新連線。
+để kết nối lại nhanh hơn trên mạng không ổn định.
+
+78
+00:04:36,654 --> 00:04:39,914
+不過，面對數以百萬計的裝置，
+Tuy nhiên, với hàng triệu thiết bị,
+
+79
+00:04:39,954 --> 00:04:43,286
+安全與管理仍是待解的挑戰。
+bảo mật và quản lý vẫn là thách thức chưa có lời giải.
+
+80
+00:04:43,586 --> 00:04:47,566
+記住一句話：發布者只管送到主題，
+Hãy nhớ: bên xuất bản chỉ cần gửi đến chủ đề,
+
+81
+00:04:47,606 --> 00:04:52,366
+Broker 負責轉交，訂閱者只收自己關心的。
+Broker lo chuyển tiếp, bên đăng ký chỉ nhận điều mình quan tâm.
+
+82
+00:04:52,406 --> 00:04:55,040
+這，就是 MQTT。
+Đó chính là MQTT.
+

@@ -1,0 +1,2213 @@
+{
+ "schema_version": 1,
+ "title": "MQTT 入門：訊息如何找到對的人？",
+ "content_type": "technical",
+ "learning_goal": "看完能說明「發布者 → Broker → 訂閱者」的流程，並能為一個教室監測情境設計 Topic、選擇 QoS。",
+ "audience": "高中職／大一 IoT 入門",
+ "fps": 30,
+ "width": 1920,
+ "height": 1080,
+ "duration": 300.0,
+ "is_template": false,
+ "approval": {
+  "status": "approved",
+  "evidence": "2026-10-07 使用者回覆「用 Charon，樣片和大綱都OK，開始正式製作」；片長改為 300 秒亦經使用者選擇"
+ },
+ "voice": {
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Charon",
+  "locale": "zh-TW"
+ },
+ "font_assets": [
+  {
+   "family": "Lesson TC",
+   "url": "fonts/NotoSansTC-VF.ttf",
+   "license": "OFL-1.1"
+  },
+  {
+   "family": "Lesson Latin",
+   "url": "fonts/NotoSans-Regular.ttf",
+   "license": "OFL-1.1"
+  }
+ ],
+ "mix": "audio/mix.mp3",
+ "sources": [
+  {
+   "id": "webduino",
+   "title": "MQTT 指南（Webduino）",
+   "url": "https://webduino.io/resource/blog/mqtt-guide/",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "swf",
+   "title": "MQTT教學（一）：認識MQTT（swf.com.tw）",
+   "url": "https://swf.com.tw/?p=1002",
+   "published_at": "2017-03-27",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "mqttorg",
+   "title": "MQTT FAQ（mqtt.org）",
+   "url": "https://mqtt.org/faq/",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "hivemq",
+   "title": "The History of MQTT Part 1: The Origin（HiveMQ）",
+   "url": "https://www.hivemq.com/blog/the-history-of-mqtt-part-1-the-origin/",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "oasis5",
+   "title": "MQTT Version 5.0（OASIS Standard）",
+   "url": "https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html",
+   "published_at": "2019-03-07",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "oasisiso",
+   "title": "OASIS MQTT Internet of Things Standard Now Approved by ISO/IEC JTC1",
+   "url": "https://www.oasis-open.org/?p=3952",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "wiki",
+   "title": "MQTT（Wikipedia，用於交叉核對 3.1.1 發布日 2014-10-29）",
+   "url": "https://en.wikipedia.org/wiki/MQTT",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "fb",
+   "title": "Building Facebook Messenger（Facebook Engineering）",
+   "url": "https://engineering.fb.com/2011/08/12/android/building-facebook-messenger/",
+   "published_at": "2011-08-12",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "sparkplug",
+   "title": "The Eclipse Foundation Announces Sparkplug as an International Standard",
+   "url": "https://newsroom.eclipse.org/node/39754",
+   "published_at": "2023-11-07",
+   "checked_at": "2026-10-07"
+  },
+  {
+   "id": "emqx",
+   "title": "MQTT over QUIC features（EMQX Docs）",
+   "url": "https://docs.emqx.com/en/emqx/latest/mqtt-over-quic/features-mqtt-over-quic.html",
+   "checked_at": "2026-10-07"
+  }
+ ],
+ "coverage": {
+  "origin": {
+   "summary": "1999 年 IBM 的 Andy Stanford-Clark 與 Arcom 的 Arlen Nipper 為衛星監控石油管線設計 MQTT；2010 年 3.1 免權利金公開；2014-10-29 MQTT 3.1.1 成為 OASIS 標準，之後成為 ISO/IEC 20922；2019-03-07 MQTT 5.0。",
+   "source_ids": [
+    "swf",
+    "mqttorg",
+    "hivemq",
+    "oasisiso",
+    "oasis5",
+    "wiki"
+   ],
+   "date": "1999",
+   "precision": "year",
+   "event_type": "首次版本提出"
+  },
+  "principle": {
+   "summary": "發布／訂閱透過 Broker 轉交；Topic 以斜線分層，+ 單層、# 多層萬用字元；QoS 0/1/2；Retain 與 Last Will。",
+   "source_ids": [
+    "webduino",
+    "swf",
+    "oasis5"
+   ]
+  },
+  "comparison": {
+   "summary": "同一任務（手機即時看溫度）比較 HTTP/1.1 輪詢與 MQTT 3.1.1 推送：通訊模式、連線、通知方式、標頭、適用情境。",
+   "source_ids": [
+    "webduino",
+    "swf",
+    "oasis5"
+   ],
+   "alternatives": [
+    "MQTT 3.1.1",
+    "HTTP/1.1"
+   ],
+   "dimensions": [
+    "通訊模式",
+    "連線方式",
+    "新資料通知",
+    "標頭",
+    "適用情境"
+   ],
+   "conditions": "依協定規格比較，非實測效能",
+   "time_sensitive": false
+  },
+  "application": {
+   "summary": "真實：2011 Facebook Messenger 以 MQTT 維持手機長連線。示範：教室監測（QoS 0 溫度、QoS 1 冷氣指令、LWT 離線通知、school/+/temp），限制：Broker 集中點、公開 Broker 不可傳私密資料、需帳密與 TLS。",
+   "source_ids": [
+    "fb",
+    "swf"
+   ],
+   "case_type": "real"
+  },
+  "outlook": {
+   "summary": "MQTT 5.0 已發布功能；Sparkplug 3.0 於 2023 年成為 ISO/IEC 20237；MQTT over QUIC 屬廠商實驗功能（research）；百萬裝置的安全與管理為待解問題（inference）。",
+   "source_ids": [
+    "oasis5",
+    "sparkplug",
+    "emqx"
+   ],
+   "claim_type": "research",
+   "as_of": "2026-10-07"
+  }
+ },
+ "scenes": [
+  {
+   "id": "s1",
+   "kind": "web",
+   "section": "origin",
+   "start": 0.0,
+   "end": 18.263,
+   "chapter": "開場",
+   "title": "資料要送給很多人，怎麼辦？",
+   "menu": "開場：連線變成蜘蛛網",
+   "objective": "感受點對點直連在裝置變多時的連線數爆炸，引出需要中介者",
+   "narration": "想像教室裡有三十個感測器，溫度、濕度、二氧化碳，每一筆資料都要同時送到手機、網頁和資料庫。如果每個裝置都和每個接收端直接連線，線路很快就會亂成一張蜘蛛網。有沒有更好的方法？",
+   "segments": [
+    "a1",
+    "a2"
+   ],
+   "phases": [
+    {
+     "name": "a1：想像教室裡有三十個感測器…",
+     "start": 0.0,
+     "end": 10.097
+    },
+    {
+     "name": "a2：如果每個裝置都和每個接收…",
+     "start": 10.097,
+     "end": 18.263
+    }
+   ],
+   "qa_times": [
+    15.217,
+    17.177
+   ],
+   "fade_in": 0.6
+  },
+  {
+   "id": "s2",
+   "kind": "origin",
+   "section": "origin",
+   "start": 18.263,
+   "end": 54.263,
+   "chapter": "起源 Origin",
+   "title": "起源：1999 年，為衛星油管而生",
+   "menu": "起源：1999 年",
+   "objective": "說出 MQTT 的起源日期、發明者、當時要解決的限制與標準化里程碑",
+   "narration": "答案之一，就是 MQTT。1999年，IBM 的 Andy Stanford-Clark 和 Arcom 公司的 Arlen Nipper，為了透過衛星監控石油管線，設計出這個協定。當時衛星頻寬很貴、連線不穩定，現場裝置的電力也有限，所以它必須又輕、又省、又可靠。2010年，規格免費公開；2014年成為 OASIS 標準，後來也成為 ISO 國際標準；2019年，推出 MQTT 5.0。",
+   "segments": [
+    "b1",
+    "b2",
+    "b3"
+   ],
+   "phases": [
+    {
+     "name": "b1：答案之一，就是 MQTT…",
+     "start": 18.263,
+     "end": 31.303
+    },
+    {
+     "name": "b2：當時衛星頻寬很貴、連線不…",
+     "start": 31.303,
+     "end": 41.485
+    },
+    {
+     "name": "b3：2010年，規格免費公開…",
+     "start": 41.485,
+     "end": 54.263
+    }
+   ],
+   "qa_times": [
+    29.513,
+    39.383,
+    41.285,
+    51.485
+   ],
+   "screen": "1999｜Andy Stanford-Clark（IBM）、Arlen Nipper（Arcom）；2010、2014、2016、2019 里程碑",
+   "spoken_date": "1999年"
+  },
+  {
+   "id": "s3",
+   "kind": "pubsub",
+   "section": "principle",
+   "start": 54.263,
+   "end": 83.98,
+   "chapter": "原理 ① 發布／訂閱",
+   "title": "Broker 居中轉交：誰訂閱，誰就收到",
+   "menu": "原理①：發布與訂閱",
+   "objective": "說明發布者、Broker、訂閱者的分工與訊息轉交流程",
+   "narration": "MQTT 的核心是「發布與訂閱」。中間有一台伺服器，叫做 Broker，也就是訊息代理人。感測器是發布者，它只要把資料送到一個「主題」，例如一〇一教室的溫度，不需要知道誰會收到。手機和網頁是訂閱者，事先告訴 Broker 自己關心哪些主題；Broker 一收到新訊息，就複製一份轉交給它們。雙方完全不必知道彼此的位址。",
+   "segments": [
+    "c1",
+    "c2",
+    "c3"
+   ],
+   "phases": [
+    {
+     "name": "c1：MQTT 的核心是「發布…",
+     "start": 54.263,
+     "end": 62.695
+    },
+    {
+     "name": "c2：感測器是發布者，它只要把…",
+     "start": 62.695,
+     "end": 71.294
+    },
+    {
+     "name": "c3：手機和網頁是訂閱者，事先…",
+     "start": 71.294,
+     "end": 83.98
+    }
+   ],
+   "qa_times": [
+    77.494,
+    78.794,
+    82.914
+   ],
+   "marks": {
+    "intro": "c1.1",
+    "broker": "c1.2",
+    "hint": "c1.3",
+    "pub": "c2.1",
+    "topic": "c2.2",
+    "subs": "c3.1",
+    "subscribe": "c3.2",
+    "publish": "c3.3-0.9",
+    "fanout": "c3.3+1.0",
+    "decouple": "c3.4"
+   }
+  },
+  {
+   "id": "s4",
+   "kind": "topics",
+   "section": "principle",
+   "start": 83.98,
+   "end": 114.133,
+   "chapter": "原理 ② Topic 與萬用字元",
+   "title": "主題分層，用 + 與 # 一次訂閱多個",
+   "menu": "原理②：Topic 與萬用字元",
+   "objective": "能判斷含 + 或 # 的訂閱條件會收到哪些主題",
+   "narration": "主題像資料夾一樣，用斜線分層：學校、教室、感測項目。訂閱時可以使用萬用字元。加號代表「任意一層」，所以學校、加號、溫度，會收到每一間教室的溫度。井字號代表「這一層以下的全部」，而且只能放在最後；一〇一教室加上井字號，就是這間教室的所有資料。",
+   "segments": [
+    "d1",
+    "d2",
+    "d3"
+   ],
+   "phases": [
+    {
+     "name": "d1：主題像資料夾一樣，用斜線…",
+     "start": 83.98,
+     "end": 91.295
+    },
+    {
+     "name": "d2：訂閱時可以使用萬用字元。…",
+     "start": 91.295,
+     "end": 102.88
+    },
+    {
+     "name": "d3：井字號代表「這一層以下的…",
+     "start": 102.88,
+     "end": 114.133
+    }
+   ],
+   "qa_times": [
+    100.835,
+    106.84,
+    109.135
+   ]
+  },
+  {
+   "id": "s5",
+   "kind": "qos",
+   "section": "principle",
+   "start": 114.133,
+   "end": 147.329,
+   "chapter": "原理 ③ 服務品質 QoS",
+   "title": "QoS 0／1／2：可靠度與成本的取捨",
+   "menu": "原理③：QoS",
+   "objective": "比較三種 QoS 的傳送保證、代價，並依資料重要性選擇",
+   "narration": "網路不一定可靠，所以 MQTT 提供三種服務品質，簡稱 QoS。QoS 0，最多送一次，送出就不管，最省資源，但可能遺失。QoS 1，至少送一次，收到的一方要回覆確認，沒收到確認就重送，所以可能重複。QoS 2，剛好一次，用四個步驟確認，最可靠，但也最慢、最耗流量。要依資料的重要性來選擇。",
+   "segments": [
+    "e1",
+    "e2",
+    "e3",
+    "e4"
+   ],
+   "phases": [
+    {
+     "name": "e1：網路不一定可靠，所以 M…",
+     "start": 114.133,
+     "end": 121.222
+    },
+    {
+     "name": "e2：QoS 0，最多送一次，…",
+     "start": 121.222,
+     "end": 127.719
+    },
+    {
+     "name": "e3：QoS 1，至少送一次，…",
+     "start": 127.719,
+     "end": 137.194
+    },
+    {
+     "name": "e4：QoS 2，剛好一次，用…",
+     "start": 137.194,
+     "end": 147.329
+    }
+   ],
+   "qa_times": [
+    126.162,
+    134.719,
+    139.594,
+    146.054
+   ]
+  },
+  {
+   "id": "s6",
+   "kind": "retain",
+   "section": "principle",
+   "start": 147.329,
+   "end": 168.687,
+   "chapter": "原理 ④ 保留訊息與遺囑",
+   "title": "新來的立刻知道，斷線的自動通報",
+   "menu": "原理④：保留訊息與遺囑",
+   "objective": "說明 Retain 與 Last Will 的用途",
+   "narration": "還有兩個實用功能。保留訊息：Broker 會記住主題的最後一筆值，新的訂閱者一連上，就立刻知道目前狀態。遺囑訊息：裝置連線時先留下一段遺言；萬一它意外斷線，Broker 會代為發布「已離線」，讓大家知道。",
+   "segments": [
+    "f1",
+    "f2"
+   ],
+   "phases": [
+    {
+     "name": "f1：還有兩個實用功能。保留訊…",
+     "start": 147.329,
+     "end": 157.642
+    },
+    {
+     "name": "f2：遺囑訊息：裝置連線時先留…",
+     "start": 157.642,
+     "end": 168.687
+    }
+   ],
+   "qa_times": [
+    155.559,
+    163.782,
+    167.942
+   ]
+  },
+  {
+   "id": "s7",
+   "kind": "compare",
+   "section": "comparison",
+   "start": 168.687,
+   "end": 202.777,
+   "chapter": "比較 Comparison",
+   "title": "MQTT vs HTTP：同一個任務，兩種做法",
+   "menu": "比較：MQTT vs HTTP",
+   "objective": "在相同任務下比較 HTTP 輪詢與 MQTT 推送的差異與適用情境",
+   "narration": "和網頁常用的 HTTP 比一比。同樣要讓手機即時看到溫度：HTTP 是請求與回應，手機得一再詢問「有新資料嗎？」，每次都帶著一長串文字標頭。MQTT 則維持一條長連線，有新資料時由 Broker 主動推送，固定標頭最小只有兩個位元組。HTTP 工具成熟，適合網頁和檔案傳輸；MQTT 則適合頻寬小、裝置多、需要即時通知的物聯網。",
+   "segments": [
+    "g1",
+    "g2",
+    "g3",
+    "g4"
+   ],
+   "phases": [
+    {
+     "name": "g1：和網頁常用的 HTTP …",
+     "start": 168.687,
+     "end": 174.886
+    },
+    {
+     "name": "g2：HTTP 是請求與回應，…",
+     "start": 174.886,
+     "end": 183.73
+    },
+    {
+     "name": "g3：MQTT 則維持一條長連…",
+     "start": 183.73,
+     "end": 192.782
+    },
+    {
+     "name": "g4：HTTP 工具成熟，適合…",
+     "start": 192.782,
+     "end": 202.777
+    }
+   ],
+   "qa_times": [
+    181.546,
+    188.85,
+    190.61,
+    198.342
+   ]
+  },
+  {
+   "id": "s8",
+   "kind": "apply",
+   "section": "application",
+   "start": 202.777,
+   "end": 250.797,
+   "chapter": "應用 Application",
+   "title": "從即時通訊到教室監測",
+   "menu": "應用：真實案例與示範",
+   "objective": "看懂一個完整 IoT 案例中 Topic、QoS、LWT 的選擇與限制",
+   "narration": "MQTT 早就用在真實產品中，例如 2011年的 Facebook Messenger，就用它維持手機的長連線。來看一個示範情境：教室環境監測。ESP32 每十秒用 QoS 0 發布溫度，偶爾少一筆沒有關係。冷氣開關的指令比較重要，改用 QoS 1；裝置也設定遺囑訊息，一斷線，畫面就顯示離線。結果，老師只要訂閱一個加號主題，就能在手機上看到所有教室，還能遠端控制。但要注意：Broker 是集中點，需要備援；公開的測試 Broker 不能傳私密資料，正式使用要加上帳號密碼與 TLS 加密。",
+   "segments": [
+    "h0",
+    "h1",
+    "h2",
+    "h3",
+    "h4"
+   ],
+   "phases": [
+    {
+     "name": "h0：MQTT 早就用在真實產…",
+     "start": 202.777,
+     "end": 211.479
+    },
+    {
+     "name": "h1：來看一個示範情境：教室環…",
+     "start": 211.479,
+     "end": 222.017
+    },
+    {
+     "name": "h2：冷氣開關的指令比較重要，…",
+     "start": 222.017,
+     "end": 231.089
+    },
+    {
+     "name": "h3：結果，老師只要訂閱一個加…",
+     "start": 231.089,
+     "end": 238.706
+    },
+    {
+     "name": "h4：但要注意：Broker …",
+     "start": 238.706,
+     "end": 250.797
+    }
+   ],
+   "qa_times": [
+    206.867,
+    216.579,
+    223.817,
+    228.357,
+    235.689,
+    247.466
+   ]
+  },
+  {
+   "id": "s9",
+   "kind": "outlook",
+   "section": "outlook",
+   "start": 250.797,
+   "end": 283.136,
+   "chapter": "展望 Outlook",
+   "title": "MQTT 的下一步",
+   "menu": "展望：新版本與挑戰",
+   "objective": "區分已發布、已標準化與實驗中的發展，認識未解問題",
+   "narration": "展望未來，MQTT 5.0 加入了原因碼、共享訂閱和訊息到期等功能，讓大型系統更容易管理。在工廠裡，建立在 MQTT 之上的 Sparkplug 規範，已在 2023年成為國際標準。也有廠商正在實驗以 QUIC 取代 TCP，讓不穩定的網路更快重新連線。不過，面對數以百萬計的裝置，安全與管理仍是待解的挑戰。",
+   "segments": [
+    "i1",
+    "i2",
+    "i3"
+   ],
+   "phases": [
+    {
+     "name": "i1：展望未來，MQTT 5.…",
+     "start": 250.797,
+     "end": 260.619
+    },
+    {
+     "name": "i2：在工廠裡，建立在 MQT…",
+     "start": 260.619,
+     "end": 268.014
+    },
+    {
+     "name": "i3：也有廠商正在實驗以 QU…",
+     "start": 268.014,
+     "end": 283.136
+    }
+   ],
+   "qa_times": [
+    261.419,
+    277.454
+   ]
+  },
+  {
+   "id": "s10",
+   "kind": "recap",
+   "section": "recap",
+   "start": 283.136,
+   "end": 297.0,
+   "chapter": "總結",
+   "title": "一句話記住 MQTT",
+   "menu": "總結",
+   "objective": "回收核心概念",
+   "narration": "記住一句話：發布者只管送到主題，Broker 負責轉交，訂閱者只收自己關心的。這，就是 MQTT。",
+   "segments": [
+    "j1"
+   ],
+   "phases": [
+    {
+     "name": "j1：記住一句話：發布者只管送…",
+     "start": 283.136,
+     "end": 297.0
+    }
+   ],
+   "qa_times": [
+    288.606,
+    293.206
+   ]
+  },
+  {
+   "id": "credit",
+   "kind": "credit",
+   "section": "credit",
+   "start": 297.0,
+   "end": 300.0,
+   "chapter": "",
+   "title": "",
+   "menu": "片尾",
+   "screen": "李振偉老師",
+   "narration": "",
+   "fade_out": 0,
+   "phases": [
+    {
+     "name": "署名",
+     "start": 297.0,
+     "end": 300.0
+    }
+   ],
+   "qa_times": []
+  }
+ ],
+ "cue_index": {
+  "a1.1": 0.8,
+  "a1.2": 3.46,
+  "a1.3": 5.96,
+  "a2.1": 10.297,
+  "a2.2": 13.717,
+  "a2.3": 16.377,
+  "b1.1": 18.713,
+  "b1.2": 21.673,
+  "b1.3": 25.213,
+  "b1.4": 27.513,
+  "b2.1": 31.503,
+  "b2.2": 35.343,
+  "b2.3": 37.783,
+  "b3.1": 41.685,
+  "b3.2": 44.585,
+  "b3.3": 47.625,
+  "b3.4": 50.485,
+  "c1.1": 54.713,
+  "c1.2": 57.753,
+  "c1.3": 60.733,
+  "c2.1": 62.895,
+  "c2.2": 67.175,
+  "c3.1": 71.494,
+  "c3.2": 73.734,
+  "c3.3": 77.194,
+  "c3.4": 81.114,
+  "d1.1": 84.43,
+  "d1.2": 87.95,
+  "d2.1": 91.495,
+  "d2.2": 94.635,
+  "d2.3": 97.015,
+  "d2.4": 100.235,
+  "d3.1": 103.08,
+  "d3.2": 106.24,
+  "d3.3": 108.135,
+  "e1.1": 114.583,
+  "e2.1": 121.422,
+  "e2.2": 125.162,
+  "e3.1": 127.919,
+  "e3.2": 133.319,
+  "e4.1": 137.394,
+  "e4.2": 141.454,
+  "e4.3": 144.854,
+  "f1.1": 147.779,
+  "f1.2": 149.679,
+  "f1.3": 154.059,
+  "f2.1": 157.842,
+  "f2.2": 162.782,
+  "f2.3": 167.442,
+  "g1.1": 169.137,
+  "g1.2": 172.297,
+  "g2.1": 175.086,
+  "g2.2": 180.946,
+  "g3.1": 183.93,
+  "g3.2": 186.85,
+  "g3.3": 189.81,
+  "g4.1": 192.982,
+  "g4.2": 197.342,
+  "h0.1": 203.227,
+  "h0.2": 206.367,
+  "h0.3": 208.767,
+  "h1.1": 211.679,
+  "h1.2": 215.579,
+  "h1.3": 220.199,
+  "h2.1": 222.217,
+  "h2.2": 226.357,
+  "h3.1": 231.289,
+  "h3.2": 234.689,
+  "h4.1": 238.906,
+  "h4.2": 243.226,
+  "h4.3": 246.666,
+  "i1.1": 251.247,
+  "i1.2": 255.407,
+  "i2.1": 260.819,
+  "i2.2": 265.119,
+  "i3.1": 268.214,
+  "i3.2": 272.354,
+  "i3.3": 276.654,
+  "i3.4": 279.954,
+  "j1.1": 283.586,
+  "j1.2": 287.606,
+  "j1.3": 292.406
+ },
+ "seg_index": {
+  "a1": 0.8,
+  "a2": 10.297,
+  "b1": 18.713,
+  "b2": 31.503,
+  "b3": 41.685,
+  "c1": 54.713,
+  "c2": 62.895,
+  "c3": 71.494,
+  "d1": 84.43,
+  "d2": 91.495,
+  "d3": 103.08,
+  "e1": 114.583,
+  "e2": 121.422,
+  "e3": 127.919,
+  "e4": 137.394,
+  "f1": 147.779,
+  "f2": 157.842,
+  "g1": 169.137,
+  "g2": 175.086,
+  "g3": 183.93,
+  "g4": 192.982,
+  "h0": 203.227,
+  "h1": 211.679,
+  "h2": 222.217,
+  "h3": 231.289,
+  "h4": 238.906,
+  "i1": 251.247,
+  "i2": 260.819,
+  "i3": 268.214,
+  "j1": 283.586
+ },
+ "subtitle_tracks": {
+  "en": {
+   "label": "中文＋English",
+   "languages": [
+    "zh-TW",
+    "en-US"
+   ],
+   "reviewed": true,
+   "timing_source": "Gemini Charon 實際音訊；faster-whisper small 字詞時間碼＋與定稿逐字序列比對（tools/timeline.py）；聆聽複核待做",
+   "cues": [
+    {
+     "id": "a1.1",
+     "start": 0.8,
+     "end": 3.42,
+     "text": [
+      "想像教室裡有三十個感測器，",
+      "Imagine a classroom with thirty sensors:"
+     ]
+    },
+    {
+     "id": "a1.2",
+     "start": 3.46,
+     "end": 5.92,
+     "text": [
+      "溫度、濕度、二氧化碳，",
+      "temperature, humidity, carbon dioxide."
+     ]
+    },
+    {
+     "id": "a1.3",
+     "start": 5.96,
+     "end": 10.257,
+     "text": [
+      "每一筆資料都要同時送到手機、網頁和資料庫。",
+      "Every reading must reach a phone, a web page and a database at once."
+     ]
+    },
+    {
+     "id": "a2.1",
+     "start": 10.297,
+     "end": 13.677,
+     "text": [
+      "如果每個裝置都和每個接收端直接連線，",
+      "If every device connected directly to every receiver,"
+     ]
+    },
+    {
+     "id": "a2.2",
+     "start": 13.717,
+     "end": 16.337,
+     "text": [
+      "線路很快就會亂成一張蜘蛛網。",
+      "the links would soon tangle into a spider web."
+     ]
+    },
+    {
+     "id": "a2.3",
+     "start": 16.377,
+     "end": 18.413,
+     "text": [
+      "有沒有更好的方法？",
+      "Is there a better way?"
+     ]
+    },
+    {
+     "id": "b1.1",
+     "start": 18.713,
+     "end": 21.373,
+     "text": [
+      "答案之一，就是 MQTT。",
+      "One answer is MQTT."
+     ]
+    },
+    {
+     "id": "b1.2",
+     "start": 21.673,
+     "end": 25.173,
+     "text": [
+      "1999 年，IBM 的 Andy Stanford-Clark",
+      "In 1999, Andy Stanford-Clark of IBM"
+     ]
+    },
+    {
+     "id": "b1.3",
+     "start": 25.213,
+     "end": 27.473,
+     "text": [
+      "和 Arcom 公司的 Arlen Nipper，",
+      "and Arlen Nipper of Arcom"
+     ]
+    },
+    {
+     "id": "b1.4",
+     "start": 27.513,
+     "end": 31.463,
+     "text": [
+      "為了透過衛星監控石油管線，設計出這個協定。",
+      "designed this protocol to monitor oil pipelines via satellite."
+     ]
+    },
+    {
+     "id": "b2.1",
+     "start": 31.503,
+     "end": 35.303,
+     "text": [
+      "當時衛星頻寬很貴、連線不穩定，",
+      "Satellite bandwidth was expensive and links were unstable,"
+     ]
+    },
+    {
+     "id": "b2.2",
+     "start": 35.343,
+     "end": 37.743,
+     "text": [
+      "現場裝置的電力也有限，",
+      "and field devices had limited power,"
+     ]
+    },
+    {
+     "id": "b2.3",
+     "start": 37.783,
+     "end": 41.645,
+     "text": [
+      "所以它必須又輕、又省、又可靠。",
+      "so it had to be lightweight, efficient and reliable."
+     ]
+    },
+    {
+     "id": "b3.1",
+     "start": 41.685,
+     "end": 44.545,
+     "text": [
+      "2010 年，規格免費公開；",
+      "In 2010, the specification was released royalty-free;"
+     ]
+    },
+    {
+     "id": "b3.2",
+     "start": 44.585,
+     "end": 47.585,
+     "text": [
+      "2014 年成為 OASIS 標準，",
+      "in 2014 it became an OASIS standard,"
+     ]
+    },
+    {
+     "id": "b3.3",
+     "start": 47.625,
+     "end": 50.425,
+     "text": [
+      "後來也成為 ISO 國際標準；",
+      "and later an ISO international standard;"
+     ]
+    },
+    {
+     "id": "b3.4",
+     "start": 50.485,
+     "end": 54.414,
+     "text": [
+      "2019 年，推出 MQTT 5.0。",
+      "in 2019, MQTT 5.0 was released."
+     ]
+    },
+    {
+     "id": "c1.1",
+     "start": 54.713,
+     "end": 57.713,
+     "text": [
+      "MQTT 的核心是「發布與訂閱」。",
+      "At the heart of MQTT is publish/subscribe."
+     ]
+    },
+    {
+     "id": "c1.2",
+     "start": 57.753,
+     "end": 60.693,
+     "text": [
+      "中間有一台伺服器，叫做 Broker，",
+      "In the middle sits a server called the Broker,"
+     ]
+    },
+    {
+     "id": "c1.3",
+     "start": 60.733,
+     "end": 62.855,
+     "text": [
+      "也就是訊息代理人。",
+      "the message broker."
+     ]
+    },
+    {
+     "id": "c2.1",
+     "start": 62.895,
+     "end": 67.135,
+     "text": [
+      "感測器是發布者，它只要把資料送到一個「主題」，",
+      "The sensor is a publisher; it just sends data to a “topic”,"
+     ]
+    },
+    {
+     "id": "c2.2",
+     "start": 67.175,
+     "end": 71.454,
+     "text": [
+      "例如 101 教室的溫度，不需要知道誰會收到。",
+      "such as Room 101's temperature, without knowing who will receive it."
+     ]
+    },
+    {
+     "id": "c3.1",
+     "start": 71.494,
+     "end": 73.694,
+     "text": [
+      "手機和網頁是訂閱者，",
+      "The phone and the web page are subscribers."
+     ]
+    },
+    {
+     "id": "c3.2",
+     "start": 73.734,
+     "end": 77.154,
+     "text": [
+      "事先告訴 Broker 自己關心哪些主題；",
+      "They tell the Broker in advance which topics they care about."
+     ]
+    },
+    {
+     "id": "c3.3",
+     "start": 77.194,
+     "end": 81.074,
+     "text": [
+      "Broker 一收到新訊息，就複製一份轉交給它們。",
+      "When a new message arrives, the Broker forwards a copy to each."
+     ]
+    },
+    {
+     "id": "c3.4",
+     "start": 81.114,
+     "end": 84.13,
+     "text": [
+      "雙方完全不必知道彼此的位址。",
+      "Neither side needs to know the other's address."
+     ]
+    },
+    {
+     "id": "d1.1",
+     "start": 84.43,
+     "end": 87.91,
+     "text": [
+      "主題像資料夾一樣，用斜線分層：",
+      "Topics are layered with slashes, like folders:"
+     ]
+    },
+    {
+     "id": "d1.2",
+     "start": 87.95,
+     "end": 91.455,
+     "text": [
+      "學校、教室、感測項目。",
+      "school, classroom, sensor type."
+     ]
+    },
+    {
+     "id": "d2.1",
+     "start": 91.495,
+     "end": 94.435,
+     "text": [
+      "訂閱時可以使用萬用字元。",
+      "When subscribing, you can use wildcards."
+     ]
+    },
+    {
+     "id": "d2.2",
+     "start": 94.635,
+     "end": 96.975,
+     "text": [
+      "加號「+」代表「任意一層」，",
+      "The plus sign “+” matches any single level,"
+     ]
+    },
+    {
+     "id": "d2.3",
+     "start": 97.015,
+     "end": 100.195,
+     "text": [
+      "所以 school/+/temp",
+      "so school/+/temp"
+     ]
+    },
+    {
+     "id": "d2.4",
+     "start": 100.235,
+     "end": 103.04,
+     "text": [
+      "會收到每一間教室的溫度。",
+      "receives the temperature of every classroom."
+     ]
+    },
+    {
+     "id": "d3.1",
+     "start": 103.08,
+     "end": 106.2,
+     "text": [
+      "井字號「#」代表「這一層以下的全部」，",
+      "The hash “#” matches everything below that level,"
+     ]
+    },
+    {
+     "id": "d3.2",
+     "start": 106.24,
+     "end": 108.095,
+     "text": [
+      "而且只能放在最後；",
+      "and it can only go at the end;"
+     ]
+    },
+    {
+     "id": "d3.3",
+     "start": 108.135,
+     "end": 114.282,
+     "text": [
+      "school/room101/# 就是這間教室的所有資料。",
+      "school/room101/# means all data from that room."
+     ]
+    },
+    {
+     "id": "e1.1",
+     "start": 114.583,
+     "end": 121.382,
+     "text": [
+      "網路不一定可靠，所以 MQTT 提供三種服務品質，簡稱 QoS。",
+      "Networks aren't always reliable, so MQTT offers three Quality of Service levels."
+     ]
+    },
+    {
+     "id": "e2.1",
+     "start": 121.422,
+     "end": 125.122,
+     "text": [
+      "QoS 0，最多送一次，送出就不管，",
+      "QoS 0: at most once — send and forget,"
+     ]
+    },
+    {
+     "id": "e2.2",
+     "start": 125.162,
+     "end": 127.879,
+     "text": [
+      "最省資源，但可能遺失。",
+      "cheapest, but messages may be lost."
+     ]
+    },
+    {
+     "id": "e3.1",
+     "start": 127.919,
+     "end": 133.279,
+     "text": [
+      "QoS 1，至少送一次，收到的一方要回覆確認，",
+      "QoS 1: at least once — the receiver must acknowledge,"
+     ]
+    },
+    {
+     "id": "e3.2",
+     "start": 133.319,
+     "end": 137.354,
+     "text": [
+      "沒收到確認就重送，所以可能重複。",
+      "and without an acknowledgment it resends, so duplicates can happen."
+     ]
+    },
+    {
+     "id": "e4.1",
+     "start": 137.394,
+     "end": 141.414,
+     "text": [
+      "QoS 2，剛好一次，用四個步驟確認，",
+      "QoS 2: exactly once, confirmed in four steps —"
+     ]
+    },
+    {
+     "id": "e4.2",
+     "start": 141.454,
+     "end": 144.594,
+     "text": [
+      "最可靠，但也最慢、最耗流量。",
+      "the most reliable, but also the slowest and most costly."
+     ]
+    },
+    {
+     "id": "e4.3",
+     "start": 144.854,
+     "end": 147.48,
+     "text": [
+      "要依資料的重要性來選擇。",
+      "Choose based on how important the data is."
+     ]
+    },
+    {
+     "id": "f1.1",
+     "start": 147.779,
+     "end": 149.639,
+     "text": [
+      "還有兩個實用功能。",
+      "Two more handy features."
+     ]
+    },
+    {
+     "id": "f1.2",
+     "start": 149.679,
+     "end": 154.019,
+     "text": [
+      "保留訊息：Broker 會記住主題的最後一筆值，",
+      "Retained messages: the Broker remembers a topic's last value,"
+     ]
+    },
+    {
+     "id": "f1.3",
+     "start": 154.059,
+     "end": 157.802,
+     "text": [
+      "新的訂閱者一連上，就立刻知道目前狀態。",
+      "so a new subscriber learns the current state immediately."
+     ]
+    },
+    {
+     "id": "f2.1",
+     "start": 157.842,
+     "end": 162.742,
+     "text": [
+      "遺囑訊息：裝置連線時先留下一段遺言；",
+      "Last Will: a device leaves a “will” when it connects;"
+     ]
+    },
+    {
+     "id": "f2.2",
+     "start": 162.782,
+     "end": 167.402,
+     "text": [
+      "萬一它意外斷線，Broker 會代為發布「已離線」，",
+      "if it drops off unexpectedly, the Broker publishes “offline” for it,"
+     ]
+    },
+    {
+     "id": "f2.3",
+     "start": 167.442,
+     "end": 168.842,
+     "text": [
+      "讓大家知道。",
+      "so everyone knows."
+     ]
+    },
+    {
+     "id": "g1.1",
+     "start": 169.137,
+     "end": 172.177,
+     "text": [
+      "和網頁常用的 HTTP 比一比。",
+      "Let's compare it with HTTP, the protocol of the web."
+     ]
+    },
+    {
+     "id": "g1.2",
+     "start": 172.297,
+     "end": 175.046,
+     "text": [
+      "同樣要讓手機即時看到溫度：",
+      "Same task: show the temperature on a phone in real time."
+     ]
+    },
+    {
+     "id": "g2.1",
+     "start": 175.086,
+     "end": 180.866,
+     "text": [
+      "HTTP 是請求與回應，手機得一再詢問「有新資料嗎？」，",
+      "HTTP is request–response: the phone keeps asking “Any new data?”"
+     ]
+    },
+    {
+     "id": "g2.2",
+     "start": 180.946,
+     "end": 183.89,
+     "text": [
+      "每次都帶著一長串文字標頭。",
+      "carrying a long text header every time."
+     ]
+    },
+    {
+     "id": "g3.1",
+     "start": 183.93,
+     "end": 186.81,
+     "text": [
+      "MQTT 則維持一條長連線，",
+      "MQTT keeps one long-lived connection;"
+     ]
+    },
+    {
+     "id": "g3.2",
+     "start": 186.85,
+     "end": 189.77,
+     "text": [
+      "有新資料時由 Broker 主動推送，",
+      "when new data arrives, the Broker pushes it,"
+     ]
+    },
+    {
+     "id": "g3.3",
+     "start": 189.81,
+     "end": 192.942,
+     "text": [
+      "固定標頭最小只有兩個位元組。",
+      "and the fixed header can be as small as two bytes."
+     ]
+    },
+    {
+     "id": "g4.1",
+     "start": 192.982,
+     "end": 197.302,
+     "text": [
+      "HTTP 工具成熟，適合網頁和檔案傳輸；",
+      "HTTP has mature tools and suits web pages and file transfer;"
+     ]
+    },
+    {
+     "id": "g4.2",
+     "start": 197.342,
+     "end": 202.927,
+     "text": [
+      "MQTT 則適合頻寬小、裝置多、需要即時通知的物聯網。",
+      "MQTT suits IoT: low bandwidth, many devices, instant notifications."
+     ]
+    },
+    {
+     "id": "h0.1",
+     "start": 203.227,
+     "end": 206.327,
+     "text": [
+      "MQTT 早就用在真實產品中，",
+      "MQTT is already used in real products."
+     ]
+    },
+    {
+     "id": "h0.2",
+     "start": 206.367,
+     "end": 208.727,
+     "text": [
+      "例如 2011 年的 Facebook Messenger，",
+      "In 2011, Facebook Messenger"
+     ]
+    },
+    {
+     "id": "h0.3",
+     "start": 208.767,
+     "end": 211.639,
+     "text": [
+      "就用它維持手機的長連線。",
+      "used it to keep a persistent connection on phones."
+     ]
+    },
+    {
+     "id": "h1.1",
+     "start": 211.679,
+     "end": 215.499,
+     "text": [
+      "來看一個示範情境：教室環境監測。",
+      "Now a demonstration scenario: classroom monitoring."
+     ]
+    },
+    {
+     "id": "h1.2",
+     "start": 215.579,
+     "end": 220.119,
+     "text": [
+      "ESP32 每十秒用 QoS 0 發布溫度，",
+      "An ESP32 publishes the temperature every ten seconds at QoS 0;"
+     ]
+    },
+    {
+     "id": "h1.3",
+     "start": 220.199,
+     "end": 222.177,
+     "text": [
+      "偶爾少一筆沒有關係。",
+      "missing a reading now and then is fine."
+     ]
+    },
+    {
+     "id": "h2.1",
+     "start": 222.217,
+     "end": 226.237,
+     "text": [
+      "冷氣開關的指令比較重要，改用 QoS 1；",
+      "Air-conditioner commands matter more, so they use QoS 1;"
+     ]
+    },
+    {
+     "id": "h2.2",
+     "start": 226.357,
+     "end": 231.249,
+     "text": [
+      "裝置也設定遺囑訊息，一斷線，畫面就顯示離線。",
+      "the device also sets a Last Will, so the screen shows “offline” if it drops."
+     ]
+    },
+    {
+     "id": "h3.1",
+     "start": 231.289,
+     "end": 234.649,
+     "text": [
+      "結果，老師只要訂閱一個加號主題，",
+      "As a result, by subscribing to a single “+” topic,"
+     ]
+    },
+    {
+     "id": "h3.2",
+     "start": 234.689,
+     "end": 238.866,
+     "text": [
+      "就能在手機上看到所有教室，還能遠端控制。",
+      "the teacher sees every classroom on a phone and can control them remotely."
+     ]
+    },
+    {
+     "id": "h4.1",
+     "start": 238.906,
+     "end": 243.186,
+     "text": [
+      "但要注意：Broker 是集中點，需要備援；",
+      "But note: the Broker is a central point and needs redundancy;"
+     ]
+    },
+    {
+     "id": "h4.2",
+     "start": 243.226,
+     "end": 246.626,
+     "text": [
+      "公開的測試 Broker 不能傳私密資料，",
+      "never send private data through a public test Broker;"
+     ]
+    },
+    {
+     "id": "h4.3",
+     "start": 246.666,
+     "end": 250.947,
+     "text": [
+      "正式使用要加上帳號密碼與 TLS 加密。",
+      "real deployments need usernames, passwords and TLS encryption."
+     ]
+    },
+    {
+     "id": "i1.1",
+     "start": 251.247,
+     "end": 255.367,
+     "text": [
+      "展望未來，MQTT 5.0 加入了原因碼、",
+      "Looking ahead, MQTT 5.0 added reason codes,"
+     ]
+    },
+    {
+     "id": "i1.2",
+     "start": 255.407,
+     "end": 260.779,
+     "text": [
+      "共享訂閱和訊息到期等功能，讓大型系統更容易管理。",
+      "shared subscriptions and message expiry, making large systems easier to manage."
+     ]
+    },
+    {
+     "id": "i2.1",
+     "start": 260.819,
+     "end": 265.079,
+     "text": [
+      "在工廠裡，建立在 MQTT 之上的 Sparkplug 規範，",
+      "In factories, the Sparkplug specification, built on MQTT,"
+     ]
+    },
+    {
+     "id": "i2.2",
+     "start": 265.119,
+     "end": 268.174,
+     "text": [
+      "已在 2023 年成為國際標準。",
+      "became an international standard in 2023."
+     ]
+    },
+    {
+     "id": "i3.1",
+     "start": 268.214,
+     "end": 272.314,
+     "text": [
+      "也有廠商正在實驗以 QUIC 取代 TCP，",
+      "Some vendors are experimenting with QUIC instead of TCP"
+     ]
+    },
+    {
+     "id": "i3.2",
+     "start": 272.354,
+     "end": 276.594,
+     "text": [
+      "讓不穩定的網路更快重新連線。",
+      "to reconnect faster on unstable networks."
+     ]
+    },
+    {
+     "id": "i3.3",
+     "start": 276.654,
+     "end": 279.914,
+     "text": [
+      "不過，面對數以百萬計的裝置，",
+      "Yet with millions of devices,"
+     ]
+    },
+    {
+     "id": "i3.4",
+     "start": 279.954,
+     "end": 283.286,
+     "text": [
+      "安全與管理仍是待解的挑戰。",
+      "security and management remain open challenges."
+     ]
+    },
+    {
+     "id": "j1.1",
+     "start": 283.586,
+     "end": 287.566,
+     "text": [
+      "記住一句話：發布者只管送到主題，",
+      "Remember this: publishers just send to a topic,"
+     ]
+    },
+    {
+     "id": "j1.2",
+     "start": 287.606,
+     "end": 292.366,
+     "text": [
+      "Broker 負責轉交，訂閱者只收自己關心的。",
+      "the Broker delivers, and subscribers get only what they care about."
+     ]
+    },
+    {
+     "id": "j1.3",
+     "start": 292.406,
+     "end": 295.04,
+     "text": [
+      "這，就是 MQTT。",
+      "That is MQTT."
+     ]
+    }
+   ],
+   "review_basis": "自動：whisper 字詞時間碼與定稿逐字比對（各段相似度 0.87–1.00，見 script/alignment-report.json）；目視：QA 截圖檢查每段字幕起訖幀；聆聽同步：未驗證"
+  },
+  "vi": {
+   "label": "中文＋Tiếng Việt",
+   "languages": [
+    "zh-TW",
+    "vi-VN"
+   ],
+   "reviewed": true,
+   "timing_source": "Gemini Charon 實際音訊；faster-whisper small 字詞時間碼＋與定稿逐字序列比對（tools/timeline.py）；聆聽複核待做",
+   "cues": [
+    {
+     "id": "a1.1",
+     "start": 0.8,
+     "end": 3.42,
+     "text": [
+      "想像教室裡有三十個感測器，",
+      "Hãy tưởng tượng một lớp học có ba mươi cảm biến:"
+     ]
+    },
+    {
+     "id": "a1.2",
+     "start": 3.46,
+     "end": 5.92,
+     "text": [
+      "溫度、濕度、二氧化碳，",
+      "nhiệt độ, độ ẩm, khí CO2."
+     ]
+    },
+    {
+     "id": "a1.3",
+     "start": 5.96,
+     "end": 10.257,
+     "text": [
+      "每一筆資料都要同時送到手機、網頁和資料庫。",
+      "Mỗi dữ liệu phải đến cùng lúc điện thoại, trang web và cơ sở dữ liệu."
+     ]
+    },
+    {
+     "id": "a2.1",
+     "start": 10.297,
+     "end": 13.677,
+     "text": [
+      "如果每個裝置都和每個接收端直接連線，",
+      "Nếu mỗi thiết bị kết nối trực tiếp với từng bên nhận,"
+     ]
+    },
+    {
+     "id": "a2.2",
+     "start": 13.717,
+     "end": 16.337,
+     "text": [
+      "線路很快就會亂成一張蜘蛛網。",
+      "các đường kết nối sẽ nhanh chóng rối như mạng nhện."
+     ]
+    },
+    {
+     "id": "a2.3",
+     "start": 16.377,
+     "end": 18.413,
+     "text": [
+      "有沒有更好的方法？",
+      "Có cách nào tốt hơn không?"
+     ]
+    },
+    {
+     "id": "b1.1",
+     "start": 18.713,
+     "end": 21.373,
+     "text": [
+      "答案之一，就是 MQTT。",
+      "Một câu trả lời chính là MQTT."
+     ]
+    },
+    {
+     "id": "b1.2",
+     "start": 21.673,
+     "end": 25.173,
+     "text": [
+      "1999 年，IBM 的 Andy Stanford-Clark",
+      "Năm 1999, Andy Stanford-Clark của IBM"
+     ]
+    },
+    {
+     "id": "b1.3",
+     "start": 25.213,
+     "end": 27.473,
+     "text": [
+      "和 Arcom 公司的 Arlen Nipper，",
+      "và Arlen Nipper của công ty Arcom"
+     ]
+    },
+    {
+     "id": "b1.4",
+     "start": 27.513,
+     "end": 31.463,
+     "text": [
+      "為了透過衛星監控石油管線，設計出這個協定。",
+      "đã thiết kế giao thức này để giám sát đường ống dầu qua vệ tinh."
+     ]
+    },
+    {
+     "id": "b2.1",
+     "start": 31.503,
+     "end": 35.303,
+     "text": [
+      "當時衛星頻寬很貴、連線不穩定，",
+      "Khi đó băng thông vệ tinh rất đắt, kết nối không ổn định,"
+     ]
+    },
+    {
+     "id": "b2.2",
+     "start": 35.343,
+     "end": 37.743,
+     "text": [
+      "現場裝置的電力也有限，",
+      "thiết bị tại hiện trường cũng hạn chế về điện năng,"
+     ]
+    },
+    {
+     "id": "b2.3",
+     "start": 37.783,
+     "end": 41.645,
+     "text": [
+      "所以它必須又輕、又省、又可靠。",
+      "nên nó phải nhẹ, tiết kiệm và đáng tin cậy."
+     ]
+    },
+    {
+     "id": "b3.1",
+     "start": 41.685,
+     "end": 44.545,
+     "text": [
+      "2010 年，規格免費公開；",
+      "Năm 2010, đặc tả được công bố miễn phí bản quyền;"
+     ]
+    },
+    {
+     "id": "b3.2",
+     "start": 44.585,
+     "end": 47.585,
+     "text": [
+      "2014 年成為 OASIS 標準，",
+      "năm 2014 trở thành tiêu chuẩn OASIS,"
+     ]
+    },
+    {
+     "id": "b3.3",
+     "start": 47.625,
+     "end": 50.425,
+     "text": [
+      "後來也成為 ISO 國際標準；",
+      "sau đó trở thành tiêu chuẩn quốc tế ISO;"
+     ]
+    },
+    {
+     "id": "b3.4",
+     "start": 50.485,
+     "end": 54.414,
+     "text": [
+      "2019 年，推出 MQTT 5.0。",
+      "năm 2019, MQTT 5.0 ra đời."
+     ]
+    },
+    {
+     "id": "c1.1",
+     "start": 54.713,
+     "end": 57.713,
+     "text": [
+      "MQTT 的核心是「發布與訂閱」。",
+      "Cốt lõi của MQTT là “xuất bản – đăng ký” (publish/subscribe)."
+     ]
+    },
+    {
+     "id": "c1.2",
+     "start": 57.753,
+     "end": 60.693,
+     "text": [
+      "中間有一台伺服器，叫做 Broker，",
+      "Ở giữa có một máy chủ gọi là Broker,"
+     ]
+    },
+    {
+     "id": "c1.3",
+     "start": 60.733,
+     "end": 62.855,
+     "text": [
+      "也就是訊息代理人。",
+      "tức là bên trung gian chuyển tiếp tin nhắn."
+     ]
+    },
+    {
+     "id": "c2.1",
+     "start": 62.895,
+     "end": 67.135,
+     "text": [
+      "感測器是發布者，它只要把資料送到一個「主題」，",
+      "Cảm biến là bên xuất bản; nó chỉ cần gửi dữ liệu đến một “chủ đề”,"
+     ]
+    },
+    {
+     "id": "c2.2",
+     "start": 67.175,
+     "end": 71.454,
+     "text": [
+      "例如 101 教室的溫度，不需要知道誰會收到。",
+      "ví dụ nhiệt độ phòng 101, mà không cần biết ai sẽ nhận."
+     ]
+    },
+    {
+     "id": "c3.1",
+     "start": 71.494,
+     "end": 73.694,
+     "text": [
+      "手機和網頁是訂閱者，",
+      "Điện thoại và trang web là bên đăng ký (subscriber)."
+     ]
+    },
+    {
+     "id": "c3.2",
+     "start": 73.734,
+     "end": 77.154,
+     "text": [
+      "事先告訴 Broker 自己關心哪些主題；",
+      "Chúng báo trước cho Broker biết mình quan tâm chủ đề nào."
+     ]
+    },
+    {
+     "id": "c3.3",
+     "start": 77.194,
+     "end": 81.074,
+     "text": [
+      "Broker 一收到新訊息，就複製一份轉交給它們。",
+      "Khi có tin nhắn mới, Broker sao chép và chuyển cho từng bên."
+     ]
+    },
+    {
+     "id": "c3.4",
+     "start": 81.114,
+     "end": 84.13,
+     "text": [
+      "雙方完全不必知道彼此的位址。",
+      "Hai bên hoàn toàn không cần biết địa chỉ của nhau."
+     ]
+    },
+    {
+     "id": "d1.1",
+     "start": 84.43,
+     "end": 87.91,
+     "text": [
+      "主題像資料夾一樣，用斜線分層：",
+      "Chủ đề được phân tầng bằng dấu gạch chéo, giống thư mục:"
+     ]
+    },
+    {
+     "id": "d1.2",
+     "start": 87.95,
+     "end": 91.455,
+     "text": [
+      "學校、教室、感測項目。",
+      "trường, phòng học, loại cảm biến."
+     ]
+    },
+    {
+     "id": "d2.1",
+     "start": 91.495,
+     "end": 94.435,
+     "text": [
+      "訂閱時可以使用萬用字元。",
+      "Khi đăng ký, bạn có thể dùng ký tự đại diện."
+     ]
+    },
+    {
+     "id": "d2.2",
+     "start": 94.635,
+     "end": 96.975,
+     "text": [
+      "加號「+」代表「任意一層」，",
+      "Dấu cộng “+” đại diện cho “một tầng bất kỳ”,"
+     ]
+    },
+    {
+     "id": "d2.3",
+     "start": 97.015,
+     "end": 100.195,
+     "text": [
+      "所以 school/+/temp",
+      "nên school/+/temp"
+     ]
+    },
+    {
+     "id": "d2.4",
+     "start": 100.235,
+     "end": 103.04,
+     "text": [
+      "會收到每一間教室的溫度。",
+      "sẽ nhận nhiệt độ của mọi phòng học."
+     ]
+    },
+    {
+     "id": "d3.1",
+     "start": 103.08,
+     "end": 106.2,
+     "text": [
+      "井字號「#」代表「這一層以下的全部」，",
+      "Dấu thăng “#” đại diện cho “mọi thứ từ tầng này trở xuống”,"
+     ]
+    },
+    {
+     "id": "d3.2",
+     "start": 106.24,
+     "end": 108.095,
+     "text": [
+      "而且只能放在最後；",
+      "và chỉ được đặt ở cuối;"
+     ]
+    },
+    {
+     "id": "d3.3",
+     "start": 108.135,
+     "end": 114.282,
+     "text": [
+      "school/room101/# 就是這間教室的所有資料。",
+      "school/room101/# là toàn bộ dữ liệu của phòng này."
+     ]
+    },
+    {
+     "id": "e1.1",
+     "start": 114.583,
+     "end": 121.382,
+     "text": [
+      "網路不一定可靠，所以 MQTT 提供三種服務品質，簡稱 QoS。",
+      "Mạng không luôn ổn định, nên MQTT có ba mức chất lượng dịch vụ (QoS)."
+     ]
+    },
+    {
+     "id": "e2.1",
+     "start": 121.422,
+     "end": 125.122,
+     "text": [
+      "QoS 0，最多送一次，送出就不管，",
+      "QoS 0: tối đa một lần — gửi xong là thôi,"
+     ]
+    },
+    {
+     "id": "e2.2",
+     "start": 125.162,
+     "end": 127.879,
+     "text": [
+      "最省資源，但可能遺失。",
+      "tiết kiệm nhất, nhưng có thể bị mất."
+     ]
+    },
+    {
+     "id": "e3.1",
+     "start": 127.919,
+     "end": 133.279,
+     "text": [
+      "QoS 1，至少送一次，收到的一方要回覆確認，",
+      "QoS 1: ít nhất một lần — bên nhận phải gửi xác nhận,"
+     ]
+    },
+    {
+     "id": "e3.2",
+     "start": 133.319,
+     "end": 137.354,
+     "text": [
+      "沒收到確認就重送，所以可能重複。",
+      "không có xác nhận thì gửi lại, nên có thể bị trùng."
+     ]
+    },
+    {
+     "id": "e4.1",
+     "start": 137.394,
+     "end": 141.414,
+     "text": [
+      "QoS 2，剛好一次，用四個步驟確認，",
+      "QoS 2: đúng một lần, xác nhận qua bốn bước —"
+     ]
+    },
+    {
+     "id": "e4.2",
+     "start": 141.454,
+     "end": 144.594,
+     "text": [
+      "最可靠，但也最慢、最耗流量。",
+      "đáng tin cậy nhất, nhưng cũng chậm và tốn băng thông nhất."
+     ]
+    },
+    {
+     "id": "e4.3",
+     "start": 144.854,
+     "end": 147.48,
+     "text": [
+      "要依資料的重要性來選擇。",
+      "Hãy chọn theo mức độ quan trọng của dữ liệu."
+     ]
+    },
+    {
+     "id": "f1.1",
+     "start": 147.779,
+     "end": 149.639,
+     "text": [
+      "還有兩個實用功能。",
+      "Còn hai tính năng hữu ích nữa."
+     ]
+    },
+    {
+     "id": "f1.2",
+     "start": 149.679,
+     "end": 154.019,
+     "text": [
+      "保留訊息：Broker 會記住主題的最後一筆值，",
+      "Tin nhắn lưu giữ: Broker ghi nhớ giá trị cuối cùng của chủ đề,"
+     ]
+    },
+    {
+     "id": "f1.3",
+     "start": 154.059,
+     "end": 157.802,
+     "text": [
+      "新的訂閱者一連上，就立刻知道目前狀態。",
+      "nên bên đăng ký mới vừa kết nối là biết ngay trạng thái hiện tại."
+     ]
+    },
+    {
+     "id": "f2.1",
+     "start": 157.842,
+     "end": 162.742,
+     "text": [
+      "遺囑訊息：裝置連線時先留下一段遺言；",
+      "Di chúc (Last Will): thiết bị để lại “lời nhắn” khi kết nối;"
+     ]
+    },
+    {
+     "id": "f2.2",
+     "start": 162.782,
+     "end": 167.402,
+     "text": [
+      "萬一它意外斷線，Broker 會代為發布「已離線」，",
+      "nếu mất kết nối bất ngờ, Broker sẽ thay nó đăng “đã ngoại tuyến”,"
+     ]
+    },
+    {
+     "id": "f2.3",
+     "start": 167.442,
+     "end": 168.842,
+     "text": [
+      "讓大家知道。",
+      "để mọi người cùng biết."
+     ]
+    },
+    {
+     "id": "g1.1",
+     "start": 169.137,
+     "end": 172.177,
+     "text": [
+      "和網頁常用的 HTTP 比一比。",
+      "Hãy so sánh với HTTP, giao thức thường dùng trên web."
+     ]
+    },
+    {
+     "id": "g1.2",
+     "start": 172.297,
+     "end": 175.046,
+     "text": [
+      "同樣要讓手機即時看到溫度：",
+      "Cùng nhiệm vụ: hiển thị nhiệt độ trên điện thoại theo thời gian thực."
+     ]
+    },
+    {
+     "id": "g2.1",
+     "start": 175.086,
+     "end": 180.866,
+     "text": [
+      "HTTP 是請求與回應，手機得一再詢問「有新資料嗎？」，",
+      "HTTP là yêu cầu – phản hồi: điện thoại phải liên tục hỏi “Có dữ liệu mới không?”"
+     ]
+    },
+    {
+     "id": "g2.2",
+     "start": 180.946,
+     "end": 183.89,
+     "text": [
+      "每次都帶著一長串文字標頭。",
+      "và mỗi lần đều kèm phần tiêu đề văn bản dài."
+     ]
+    },
+    {
+     "id": "g3.1",
+     "start": 183.93,
+     "end": 186.81,
+     "text": [
+      "MQTT 則維持一條長連線，",
+      "MQTT duy trì một kết nối lâu dài;"
+     ]
+    },
+    {
+     "id": "g3.2",
+     "start": 186.85,
+     "end": 189.77,
+     "text": [
+      "有新資料時由 Broker 主動推送，",
+      "khi có dữ liệu mới, Broker chủ động đẩy đến,"
+     ]
+    },
+    {
+     "id": "g3.3",
+     "start": 189.81,
+     "end": 192.942,
+     "text": [
+      "固定標頭最小只有兩個位元組。",
+      "và phần tiêu đề cố định nhỏ nhất chỉ có hai byte."
+     ]
+    },
+    {
+     "id": "g4.1",
+     "start": 192.982,
+     "end": 197.302,
+     "text": [
+      "HTTP 工具成熟，適合網頁和檔案傳輸；",
+      "HTTP có công cụ hoàn thiện, phù hợp với web và truyền tệp;"
+     ]
+    },
+    {
+     "id": "g4.2",
+     "start": 197.342,
+     "end": 202.927,
+     "text": [
+      "MQTT 則適合頻寬小、裝置多、需要即時通知的物聯網。",
+      "MQTT hợp với IoT: băng thông thấp, nhiều thiết bị, cần báo tức thì."
+     ]
+    },
+    {
+     "id": "h0.1",
+     "start": 203.227,
+     "end": 206.327,
+     "text": [
+      "MQTT 早就用在真實產品中，",
+      "MQTT đã được dùng trong các sản phẩm thực tế."
+     ]
+    },
+    {
+     "id": "h0.2",
+     "start": 206.367,
+     "end": 208.727,
+     "text": [
+      "例如 2011 年的 Facebook Messenger，",
+      "Ví dụ năm 2011, Facebook Messenger"
+     ]
+    },
+    {
+     "id": "h0.3",
+     "start": 208.767,
+     "end": 211.639,
+     "text": [
+      "就用它維持手機的長連線。",
+      "đã dùng nó để duy trì kết nối lâu dài trên điện thoại."
+     ]
+    },
+    {
+     "id": "h1.1",
+     "start": 211.679,
+     "end": 215.499,
+     "text": [
+      "來看一個示範情境：教室環境監測。",
+      "Hãy xem một tình huống minh họa: giám sát môi trường lớp học."
+     ]
+    },
+    {
+     "id": "h1.2",
+     "start": 215.579,
+     "end": 220.119,
+     "text": [
+      "ESP32 每十秒用 QoS 0 發布溫度，",
+      "ESP32 cứ mười giây đăng nhiệt độ một lần với QoS 0;"
+     ]
+    },
+    {
+     "id": "h1.3",
+     "start": 220.199,
+     "end": 222.177,
+     "text": [
+      "偶爾少一筆沒有關係。",
+      "thỉnh thoảng thiếu một lần cũng không sao."
+     ]
+    },
+    {
+     "id": "h2.1",
+     "start": 222.217,
+     "end": 226.237,
+     "text": [
+      "冷氣開關的指令比較重要，改用 QoS 1；",
+      "Lệnh bật tắt máy lạnh quan trọng hơn nên dùng QoS 1;"
+     ]
+    },
+    {
+     "id": "h2.2",
+     "start": 226.357,
+     "end": 231.249,
+     "text": [
+      "裝置也設定遺囑訊息，一斷線，畫面就顯示離線。",
+      "thiết bị cũng đặt Di chúc, mất kết nối là màn hình báo ngoại tuyến."
+     ]
+    },
+    {
+     "id": "h3.1",
+     "start": 231.289,
+     "end": 234.649,
+     "text": [
+      "結果，老師只要訂閱一個加號主題，",
+      "Kết quả là chỉ cần đăng ký một chủ đề có dấu “+”,"
+     ]
+    },
+    {
+     "id": "h3.2",
+     "start": 234.689,
+     "end": 238.866,
+     "text": [
+      "就能在手機上看到所有教室，還能遠端控制。",
+      "giáo viên xem được mọi phòng học trên điện thoại và điều khiển từ xa."
+     ]
+    },
+    {
+     "id": "h4.1",
+     "start": 238.906,
+     "end": 243.186,
+     "text": [
+      "但要注意：Broker 是集中點，需要備援；",
+      "Nhưng lưu ý: Broker là điểm tập trung, cần có dự phòng;"
+     ]
+    },
+    {
+     "id": "h4.2",
+     "start": 243.226,
+     "end": 246.626,
+     "text": [
+      "公開的測試 Broker 不能傳私密資料，",
+      "không gửi dữ liệu riêng tư qua Broker thử nghiệm công cộng;"
+     ]
+    },
+    {
+     "id": "h4.3",
+     "start": 246.666,
+     "end": 250.947,
+     "text": [
+      "正式使用要加上帳號密碼與 TLS 加密。",
+      "khi dùng thật cần tài khoản, mật khẩu và mã hóa TLS."
+     ]
+    },
+    {
+     "id": "i1.1",
+     "start": 251.247,
+     "end": 255.367,
+     "text": [
+      "展望未來，MQTT 5.0 加入了原因碼、",
+      "Nhìn về tương lai, MQTT 5.0 đã thêm mã lý do,"
+     ]
+    },
+    {
+     "id": "i1.2",
+     "start": 255.407,
+     "end": 260.779,
+     "text": [
+      "共享訂閱和訊息到期等功能，讓大型系統更容易管理。",
+      "đăng ký chia sẻ và hạn tin nhắn, giúp hệ thống lớn dễ quản lý hơn."
+     ]
+    },
+    {
+     "id": "i2.1",
+     "start": 260.819,
+     "end": 265.079,
+     "text": [
+      "在工廠裡，建立在 MQTT 之上的 Sparkplug 規範，",
+      "Trong nhà máy, đặc tả Sparkplug xây dựng trên MQTT"
+     ]
+    },
+    {
+     "id": "i2.2",
+     "start": 265.119,
+     "end": 268.174,
+     "text": [
+      "已在 2023 年成為國際標準。",
+      "đã trở thành tiêu chuẩn quốc tế vào năm 2023."
+     ]
+    },
+    {
+     "id": "i3.1",
+     "start": 268.214,
+     "end": 272.314,
+     "text": [
+      "也有廠商正在實驗以 QUIC 取代 TCP，",
+      "Một số hãng đang thử nghiệm dùng QUIC thay cho TCP"
+     ]
+    },
+    {
+     "id": "i3.2",
+     "start": 272.354,
+     "end": 276.594,
+     "text": [
+      "讓不穩定的網路更快重新連線。",
+      "để kết nối lại nhanh hơn trên mạng không ổn định."
+     ]
+    },
+    {
+     "id": "i3.3",
+     "start": 276.654,
+     "end": 279.914,
+     "text": [
+      "不過，面對數以百萬計的裝置，",
+      "Tuy nhiên, với hàng triệu thiết bị,"
+     ]
+    },
+    {
+     "id": "i3.4",
+     "start": 279.954,
+     "end": 283.286,
+     "text": [
+      "安全與管理仍是待解的挑戰。",
+      "bảo mật và quản lý vẫn là thách thức chưa có lời giải."
+     ]
+    },
+    {
+     "id": "j1.1",
+     "start": 283.586,
+     "end": 287.566,
+     "text": [
+      "記住一句話：發布者只管送到主題，",
+      "Hãy nhớ: bên xuất bản chỉ cần gửi đến chủ đề,"
+     ]
+    },
+    {
+     "id": "j1.2",
+     "start": 287.606,
+     "end": 292.366,
+     "text": [
+      "Broker 負責轉交，訂閱者只收自己關心的。",
+      "Broker lo chuyển tiếp, bên đăng ký chỉ nhận điều mình quan tâm."
+     ]
+    },
+    {
+     "id": "j1.3",
+     "start": 292.406,
+     "end": 295.04,
+     "text": [
+      "這，就是 MQTT。",
+      "Đó chính là MQTT."
+     ]
+    }
+   ],
+   "review_basis": "自動：whisper 字詞時間碼與定稿逐字比對（各段相似度 0.87–1.00，見 script/alignment-report.json）；目視：QA 截圖檢查每段字幕起訖幀；聆聽同步：未驗證"
+  }
+ }
+}
